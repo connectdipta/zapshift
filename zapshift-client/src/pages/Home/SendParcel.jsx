@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import useAuth from '../hooks/useAuth';
+import useAuth from '../../hooks/useAuth';
 import Swal from 'sweetalert2';
 import lottie from 'lottie-web';
-import riderAnimation from '../assets/animations/rider.json';
+import riderAnimation from '../../assets/animations/rider.json';
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 const SendParcel = () => {
   const { register, handleSubmit, formState: { errors }, watch, reset, setValue } = useForm({
@@ -22,6 +23,7 @@ const SendParcel = () => {
   const parcelType = watch('parcelType');
   const senderRegion = watch('senderRegion');
   const receiverRegion = watch('receiverRegion');
+  const axiosSecure = useAxiosSecure;
 
   useEffect(() => {
     fetch('/warehouses.json')
@@ -116,31 +118,97 @@ const SendParcel = () => {
     });
 
     if (result.isConfirmed) {
-      setIsSubmitting(true);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setIsSubmitting(false);
-      await Swal.fire({
-        title: 'Booking Placed!',
-        html: `<div class="max-w-full mx-auto px-3 sm:px-6 text-center"><p class="text-sm sm:text-base text-gray-700">Your parcel booking has been confirmed for <strong>${amount} Tk</strong>.</p></div>`,
-        icon: 'success',
-        confirmButtonColor: '#16a34a',
-        customClass: {
-          popup: 'rounded-3xl shadow-2xl mx-2 sm:mx-auto',
-        },
-        width: 'min(95vw, 420px)',
-      });
-      reset();
+      try {
+        if (!user?.email) {
+          await Swal.fire({
+            icon: 'error',
+            title: 'Login Required',
+            text: 'Please login to place a booking.',
+            confirmButtonColor: '#ef4444',
+          });
+          return;
+        }
+
+        setIsSubmitting(true);
+        Swal.fire({
+          title: 'Submitting Booking...',
+          text: 'Please wait while we save your parcel.',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        const payload = {
+          ...data,
+          amount,
+          senderEmail: user.email,
+        };
+
+        const response = await axiosSecure.post('/parcels', payload);
+        Swal.close();
+
+        if (response?.data?.insertedId) {
+          await Swal.fire({
+            title: 'Booking Placed!',
+            html: `<div class="max-w-full mx-auto px-3 sm:px-6 text-center"><p class="text-sm sm:text-base text-gray-700">Your parcel booking has been confirmed for <strong>${amount} Tk</strong>.</p></div>`,
+            icon: 'success',
+            confirmButtonColor: '#16a34a',
+            customClass: {
+              popup: 'rounded-3xl shadow-2xl mx-2 sm:mx-auto',
+            },
+            width: 'min(95vw, 420px)',
+          });
+          reset({
+            parcelType: 'document',
+            parcelName: '',
+            parcelWeight: '',
+            senderName: '',
+            senderRegion: '',
+            senderDistrict: '',
+            senderAddress: '',
+            senderPhone: '',
+            pickupInstruction: '',
+            receiverName: '',
+            receiverRegion: '',
+            receiverDistrict: '',
+            receiverAddress: '',
+            receiverPhone: '',
+            deliveryInstruction: '',
+          });
+        } else {
+          await Swal.fire({
+            icon: 'error',
+            title: 'Booking Failed',
+            text: 'Could not save parcel booking. Please try again.',
+            confirmButtonColor: '#ef4444',
+          });
+        }
+      } catch (error) {
+        Swal.close();
+        await Swal.fire({
+          icon: 'error',
+          title: 'Server Error',
+          text: error?.response?.data?.message || 'Failed to submit booking.',
+          confirmButtonColor: '#ef4444',
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto bg-white rounded-3xl p-10 pt-2 shadow-2xl">
+    <div className=" mx-auto bg-white rounded-3xl p-10 pt-2 shadow-2xl">
       <div className="px-4 py-8">
         {/* Header */}
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Send A Parcel</h1>
         <p className="text-gray-700 text-sm font-medium mb-6">Enter your parcel details</p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <fieldset disabled={isSubmitting} className={isSubmitting ? 'space-y-6 opacity-80 pointer-events-none' : 'space-y-6'}>
           {/* Parcel Type Toggle */}
           <div>
             <div className="flex items-center gap-8">
@@ -414,6 +482,7 @@ const SendParcel = () => {
           >
             {isSubmitting ? 'Processing...' : 'Proceed to Confirm Booking'}
           </button>
+          </fieldset>
         </form>
       </div>
     </div>

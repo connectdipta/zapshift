@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AuthContext } from './AuthContext';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
 import { auth } from '../firebase/firebase.init';
@@ -9,6 +9,35 @@ const AuthProvider = ({children}) => {
 
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const logoutTimerRef = useRef(null);
+
+    const clearLogoutTimer = () => {
+        if (logoutTimerRef.current) {
+            clearTimeout(logoutTimerRef.current);
+            logoutTimerRef.current = null;
+        }
+    };
+
+    const clearTokenStorage = () => {
+        localStorage.removeItem('zapshift_access_token');
+        localStorage.removeItem('zapshift_access_expires_at');
+    };
+
+    const scheduleAutoLogout = (expiresAt) => {
+        clearLogoutTimer();
+        const msUntilExpire = new Date(expiresAt).getTime() - Date.now();
+
+        if (msUntilExpire <= 0) {
+            clearTokenStorage();
+            signOut(auth).catch(() => null);
+            return;
+        }
+
+        logoutTimerRef.current = setTimeout(() => {
+            clearTokenStorage();
+            signOut(auth).catch(() => null);
+        }, msUntilExpire);
+    };
 
     const registerUser = (email, password) => {
         setLoading(true)
@@ -23,6 +52,8 @@ const AuthProvider = ({children}) => {
 
     const logout = () => {
         setLoading(true)
+        clearLogoutTimer();
+        clearTokenStorage();
        return signOut(auth);
     }
 
@@ -37,14 +68,47 @@ const AuthProvider = ({children}) => {
 
     // Observe User State
     useEffect(()=>{
-        const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
+        const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
             // Add a small delay to ensure loading animation is visible
-            setTimeout(() => {
+            setTimeout(async () => {
+                if (currentUser?.email) {
+                    await fetch(`${import.meta.env.VITE_API_URL}/users/sync`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            email: currentUser.email,
+                            name: currentUser.displayName || 'User',
+                            photoURL: currentUser.photoURL || ''
+                        })
+                    }).catch(() => null)
+
+                    const tokenRes = await fetch(`${import.meta.env.VITE_API_URL}/jwt`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email: currentUser.email })
+                    }).catch(() => null)
+
+                    if (tokenRes?.ok) {
+                        const tokenData = await tokenRes.json();
+                        localStorage.setItem('zapshift_access_token', tokenData.token);
+                        localStorage.setItem('zapshift_access_expires_at', tokenData.expiresAt);
+                        scheduleAutoLogout(tokenData.expiresAt);
+                    }
+                } else {
+                    clearLogoutTimer();
+                    clearTokenStorage();
+                }
+
                 setUser(currentUser)
                 setLoading(false)
             }, 500) // 500ms minimum loading time
         })
         return () => {
+            clearLogoutTimer();
             unSubscribe();
         }
 

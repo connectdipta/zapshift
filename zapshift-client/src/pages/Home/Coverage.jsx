@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { useLoaderData } from "react-router";
 import { ReactNotifications, Store } from 'react-notifications-component';
 import 'react-notifications-component/dist/theme.css';
-import Footer from '../components/Footer'
+import Footer from '../../components/Footer'
 
 const Coverage = () => {
   const position = [23.685, 90.3563];
@@ -43,7 +43,7 @@ const Coverage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto bg-white rounded-3xl p-10 pt-2 shadow-2xl mt-6 mb-6">
+    <div className=" mx-auto bg-white rounded-3xl p-10 pt-2 shadow-2xl mt-6 mb-6">
       <ReactNotifications />
       <div className="">
         {/* Header */}

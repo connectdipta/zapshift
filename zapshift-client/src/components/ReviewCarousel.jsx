@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { EffectCoverflow, Pagination, Autoplay } from 'swiper/modules';
+import { EffectCoverflow, Pagination, Autoplay } from 'swiper/modules'; 
 import ReviewCard from './ReviewCard';
-import LottieAnimation from './LottieAnimation';
-import loadingAnimation from '../assets/animations/loading.json';
+import 'swiper/css';
+import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 
 const ReviewCarousel = () => {
@@ -27,9 +27,7 @@ const ReviewCarousel = () => {
     }, []);
 
     if (isLoading) {
-        return <div className="flex justify-center items-center py-10">
-            <LottieAnimation animationData={loadingAnimation} className="w-16 h-16" />
-        </div>;
+        return <p className="text-center py-10 text-gray-600">Loading reviews...</p>;
     }
 
     if (!reviews || reviews.length === 0) {

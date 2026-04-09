@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router'
-import Footer from '../components/Footer'
-import warehouses from '../assets/warehouses.json'
+import Footer from '../../components/Footer'
+import warehouses from '../../assets/warehouses.json'
 
 const Pricing = () => {
   const [parcelType, setParcelType] = useState('')
@@ -63,7 +63,7 @@ const Pricing = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto bg-white rounded-3xl p-10 pt-2 shadow-2xl">
+    <div className=" mx-auto bg-white rounded-3xl p-10 pt-2 shadow-2xl">
       <div className="">
         {/* Header */}
         <div className="py-12 px-6">

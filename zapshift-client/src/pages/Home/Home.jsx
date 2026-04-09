@@ -1,12 +1,12 @@
 import React from 'react';
-import Banner from '../components/Banner';
-import HowWorks from '../components/HowWorks';
-import OurServices from '../components/OurServices';
-import DeliveryFeatures from '../components/DeliveryFeatures';
-import Motive from '../components/Motive';
-import FAQSection from '../components/FAQSection';
-import Testimonials from '../components/Testimonials';
-import ClientLogos from '../components/ClientLogos';
+import Banner from '../../components/Banner';
+import HowWorks from '../../components/HowWorks';
+import OurServices from '../../components/OurServices';
+import DeliveryFeatures from '../../components/DeliveryFeatures';
+import Motive from '../../components/Motive';
+import FAQSection from '../../components/FAQSection';
+import Testimonials from '../../components/Testimonials';
+import ClientLogos from '../../components/ClientLogos';
 
 
 

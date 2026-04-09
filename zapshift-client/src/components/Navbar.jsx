@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Logo from "./Logo";
-import { Link, NavLink } from "react-router";
+import { Link, NavLink, useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const navigate = useNavigate();
+  const profileMenuRef = useRef(null);
 
   const activeClass =
     "bg-[var(--color-primary)] text-black rounded-full px-4 py-2 font-semibold";
@@ -20,14 +23,6 @@ const Navbar = () => {
           className={({ isActive }) => (isActive ? activeClass : inactiveClass)}
         >
           Home
-        </NavLink>
-      </li>
-      <li>
-        <NavLink
-          to="/services"
-          className={({ isActive }) => (isActive ? activeClass : inactiveClass)}
-        >
-          Services
         </NavLink>
       </li>
       <li>
@@ -72,13 +67,41 @@ const Navbar = () => {
       </li>
     </>
   );
-  const {user, logout} = useAuth();
-  const handleLogout= () => {
-    logout()
-    .then()
-    .catch(error => console.log(error))
+  const { user, logout } = useAuth();
+  
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+        setShowProfileMenu(false);
+      }
+    };
 
-  }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+  
+  const handleLogout = () => {
+    logout()
+      .then(() => {
+        setShowProfileMenu(false);
+        navigate("/");
+      })
+      .catch(error => console.log(error));
+  };
+
+  const handleDashboard = () => {
+    navigate("/dashboard");
+    setShowProfileMenu(false);
+  };
+
+  const getInitials = (name) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map(word => word[0])
+      .join("")
+      .toUpperCase();
+  };
 
   return (
     <div className="navbar bg-base-100 shadow-sm mb-5 relative rounded-2xl mx-2 mt-2 px-4 sticky top-0 z-50">
@@ -129,9 +152,73 @@ const Navbar = () => {
 
       <div className="navbar-end gap-3 flex items-center">
         {user ? (
-          <button onClick={handleLogout} className="btn btn-primary rounded-2xl text-secondary">
-            Log Out
-          </button>
+          <div className="relative" ref={profileMenuRef}>
+            <button
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              className="w-10 h-10 rounded-full bg-[var(--color-primary)] text-black font-bold flex items-center justify-center hover:shadow-lg transition cursor-pointer"
+            >
+              {user?.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName || "User"}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                getInitials(user?.displayName)
+              )}
+            </button>
+
+            {showProfileMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                <div className="px-4 py-3 border-b border-gray-100">
+                  <p className="font-semibold text-gray-900 text-sm">
+                    {user?.displayName || "User"}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {user?.email}
+                  </p>
+                </div>
+                <button
+                  onClick={handleDashboard}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 001 1h12a1 1 0 001-1V9m-9 11l4-2m-9-2h.01"
+                    />
+                  </svg>
+                  Dashboard
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition border-t border-gray-100"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                    />
+                  </svg>
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         ) : (
           <>
             <Link to="/login" className="btn btn-ghost rounded-2xl text-gray-700 border border-gray-200 hover:bg-gray-100">

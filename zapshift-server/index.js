@@ -1,91 +1,59 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+require("dotenv").config();
 
-dotenv.config();
+const express = require("express");
+const cors = require("cors");
+const jwt = require("jsonwebtoken");
+
+const { connectDB } = require("./config/db");
+const { getDB } = require("./config/db");
+const parcelRoutes = require("./routes/parcelRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
-const port = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
+/* ===== middleware ===== */
+app.use(cors({
+  origin: true,
+  credentials: true,
+}));
+
 app.use(express.json());
 
-// MongoDB URI
-const uri = process.env.MONGODB_URI;
-
-// MongoDB Client
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
+/* ===== health check ===== */
+app.get("/", (req, res) => {
+  res.send("ZapShift Server is Running");
 });
 
-async function run() {
-  try {
-    await client.connect();
-    console.log("✅ Connected to MongoDB");
-
-    const db = client.db("zapshiftDB");
-    const usersCollection = db.collection("users");
-
-    // 🔹 Root route
-    app.get('/', (req, res) => {
-      res.send('🚀 ZapShift Server is running!');
-    });
-
-    // 🔹 CREATE user
-    app.post('/users', async (req, res) => {
-      const user = req.body;
-      const result = await usersCollection.insertOne(user);
-      res.send(result);
-    });
-
-    // 🔹 READ all users
-    app.get('/users', async (req, res) => {
-      const result = await usersCollection.find().toArray();
-      res.send(result);
-    });
-
-    // 🔹 READ single user
-    app.get('/users/:id', async (req, res) => {
-      const id = req.params.id;
-      const result = await usersCollection.findOne({ _id: new ObjectId(id) });
-      res.send(result);
-    });
-
-    // 🔹 UPDATE user
-    app.put('/users/:id', async (req, res) => {
-      const id = req.params.id;
-      const updatedUser = req.body;
-
-      const result = await usersCollection.updateOne(
-        { _id: new ObjectId(id) },
-        { $set: updatedUser },
-        { upsert: true }
-      );
-
-      res.send(result);
-    });
-
-    // 🔹 DELETE user
-    app.delete('/users/:id', async (req, res) => {
-      const id = req.params.id;
-      const result = await usersCollection.deleteOne({ _id: new ObjectId(id) });
-      res.send(result);
-    });
-
-    // Start server
-    app.listen(port, () => {
-      console.log(`🔥 Server running on port ${port}`);
-    });
-
-  } catch (error) {
-    console.error("MongoDB connection failed:", error);
+app.post("/jwt", async (req, res) => {
+  const user = req.body;
+  if (!user?.email) {
+    return res.status(400).send({ message: "Email is required" });
   }
-}
 
-run();
+  const dbUser = await getDB().collection("users").findOne({ email: user.email });
+  const role = (dbUser?.role || "user").toLowerCase();
+
+  const expiresInSeconds = 3 * 60 * 60;
+  const token = jwt.sign(
+    { email: user.email, role },
+    process.env.JWT_ACCESS_SECRET || "zapshift-dev-secret",
+    { expiresIn: expiresInSeconds }
+  );
+
+  res.send({
+    token,
+    expiresAt: new Date(Date.now() + expiresInSeconds * 1000).toISOString(),
+  });
+});
+
+/* ===== routes ===== */
+app.use("/parcels", parcelRoutes);
+app.use("/users", userRoutes);
+
+/* ===== start server AFTER DB ===== */
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`🔥 Server running on port ${PORT}`);
+  });
+});

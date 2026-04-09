@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, useRouteError } from 'react-router'
-import LottieAnimation from '../components/LottieAnimation'
-import errorAnimation from '../assets/animations/error.json'
+import LottieAnimation from '../../components/LottieAnimation'
+import errorAnimation from '../../assets/animations/error.json'
 
 export default function ErrorPage() {
   const error = useRouteError()
