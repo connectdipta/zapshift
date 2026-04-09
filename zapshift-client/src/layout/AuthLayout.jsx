@@ -1,7 +1,8 @@
 import React from 'react';
 import Logo from '../components/Logo';
-import { Outlet } from 'react-router';
+import { Link, Outlet } from 'react-router';
 import authImg from "../assets/authImage.png"
+import RouteTransition from '../components/RouteTransition';
 
 const AuthLayout = () => {
     return (
@@ -11,12 +12,16 @@ const AuthLayout = () => {
                 <div className="flex-1 flex flex-col h-full bg-white px-8 lg:px-20 xl:px-32">
 
                     <div className="pt-10">
-                        <Logo />
+                        <Link to="/">
+                            <Logo />
+                        </Link>
                     </div>
 
                     <div className="flex-1 flex items-center justify-center">
                         <div className='w-full max-w-[400px]'>
-                            <Outlet />
+                            <RouteTransition>
+                                <Outlet />
+                            </RouteTransition>
                         </div>
                     </div>
 

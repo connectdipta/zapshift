@@ -8,9 +8,12 @@ import warehousesData from '../../assets/warehouses.json'
 import useAuth from '../../hooks/useAuth'
 import axiosSecure from '../../hooks/useAxiosSecure'
 import useCurrentUserRole from '../../hooks/useCurrentUserRole'
+import { useLocation, useNavigate } from 'react-router'
 
 const Rider = () => {
   const { user } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({
     defaultValues: {
       name: '',
@@ -66,6 +69,7 @@ const Rider = () => {
         text: 'Please log in before submitting a rider application.',
         confirmButtonColor: '#caeb66',
       })
+      navigate('/login', { state: location.pathname })
       return
     }
 

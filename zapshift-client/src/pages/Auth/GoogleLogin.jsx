@@ -3,15 +3,25 @@ import { FcGoogle } from "react-icons/fc";
 import useAuth from "../../hooks/useAuth";
 import { useLocation, useNavigate } from "react-router";
 
+const waitForAccessToken = async (maxWaitMs = 8000, intervalMs = 200) => {
+  const start = Date.now();
+  while (Date.now() - start < maxWaitMs) {
+    const token = localStorage.getItem("zapshift_access_token");
+    if (token) return true;
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+  }
+  return false;
+};
+
 const GoogleLogin = ({ label = "Login with Google" }) => {
   const { signInGoogle, loading } = useAuth();
   const location = useLocation()
   const navigate = useNavigate()
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     signInGoogle()
-      .then((result) => {
-        console.log("Google user:", result.user);
+      .then(async () => {
+        await waitForAccessToken();
         navigate(location?.state || '/')
       })
       .catch((error) => {

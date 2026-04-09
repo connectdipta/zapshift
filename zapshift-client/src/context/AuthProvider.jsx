@@ -41,13 +41,18 @@ const AuthProvider = ({children}) => {
 
     const registerUser = (email, password) => {
         setLoading(true)
-        return createUserWithEmailAndPassword(auth, email, password)
-
+        return createUserWithEmailAndPassword(auth, email, password).catch((error) => {
+            setLoading(false)
+            throw error
+        })
     }
 
     const signInUser = (email, password) => {
         setLoading(true)
-        return signInWithEmailAndPassword(auth, email, password)
+        return signInWithEmailAndPassword(auth, email, password).catch((error) => {
+            setLoading(false)
+            throw error
+        })
     }
 
     const logout = () => {
@@ -59,7 +64,10 @@ const AuthProvider = ({children}) => {
 
     const signInGoogle = () => {
         setLoading(true)
-        return signInWithPopup(auth, googleProvider)
+        return signInWithPopup(auth, googleProvider).catch((error) => {
+            setLoading(false)
+            throw error
+        })
     }
 
     const updateUserProfile = (profile) => {
@@ -71,40 +79,55 @@ const AuthProvider = ({children}) => {
         const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
             // Add a small delay to ensure loading animation is visible
             setTimeout(async () => {
-                if (currentUser?.email) {
-                    await fetch(`${import.meta.env.VITE_API_URL}/users/sync`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            email: currentUser.email,
-                            name: currentUser.displayName || 'User',
-                            photoURL: currentUser.photoURL || ''
-                        })
-                    }).catch(() => null)
+                try {
+                    if (currentUser?.email) {
+                        const syncController = new AbortController()
+                        const syncTimeout = setTimeout(() => syncController.abort(), 8000)
 
-                    const tokenRes = await fetch(`${import.meta.env.VITE_API_URL}/jwt`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ email: currentUser.email })
-                    }).catch(() => null)
+                        await fetch(`${import.meta.env.VITE_API_URL}/users/sync`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                email: currentUser.email,
+                                name: currentUser.displayName || 'User',
+                                photoURL: currentUser.photoURL || ''
+                            }),
+                            signal: syncController.signal,
+                        }).catch(() => null)
 
-                    if (tokenRes?.ok) {
-                        const tokenData = await tokenRes.json();
-                        localStorage.setItem('zapshift_access_token', tokenData.token);
-                        localStorage.setItem('zapshift_access_expires_at', tokenData.expiresAt);
-                        scheduleAutoLogout(tokenData.expiresAt);
+                        clearTimeout(syncTimeout)
+
+                        const tokenController = new AbortController()
+                        const tokenTimeout = setTimeout(() => tokenController.abort(), 8000)
+
+                        const tokenRes = await fetch(`${import.meta.env.VITE_API_URL}/jwt`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ email: currentUser.email }),
+                            signal: tokenController.signal,
+                        }).catch(() => null)
+
+                        clearTimeout(tokenTimeout)
+
+                        if (tokenRes?.ok) {
+                            const tokenData = await tokenRes.json();
+                            localStorage.setItem('zapshift_access_token', tokenData.token);
+                            localStorage.setItem('zapshift_access_expires_at', tokenData.expiresAt);
+                            scheduleAutoLogout(tokenData.expiresAt);
+                        }
+                    } else {
+                        clearLogoutTimer();
+                        clearTokenStorage();
                     }
-                } else {
-                    clearLogoutTimer();
-                    clearTokenStorage();
-                }
 
-                setUser(currentUser)
-                setLoading(false)
+                    setUser(currentUser)
+                } finally {
+                    setLoading(false)
+                }
             }, 500) // 500ms minimum loading time
         })
         return () => {

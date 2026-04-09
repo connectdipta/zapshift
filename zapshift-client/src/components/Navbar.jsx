@@ -221,10 +221,10 @@ const Navbar = () => {
           </div>
         ) : (
           <>
-            <Link to="/login" className="btn btn-ghost rounded-2xl text-gray-700 border border-gray-200 hover:bg-gray-100">
+            <Link to="/login" className="btn btn-ghost rounded-2xl text-gray-700 border border-gray-200 hover:bg-gray-100 h-9 min-h-9 px-3 text-sm max-sm:px-2 max-sm:text-xs">
               Sign In
             </Link>
-            <Link to="/register" className="btn btn-primary rounded-2xl text-secondary bg-[#D7EB6F] border-none hover:bg-[#c4db5d]">
+            <Link to="/register" className="btn btn-primary rounded-2xl text-secondary bg-[#D7EB6F] border-none hover:bg-[#c4db5d] h-9 min-h-9 px-3 text-sm max-sm:px-2 max-sm:text-xs">
               Sign Up
             </Link>
           </>

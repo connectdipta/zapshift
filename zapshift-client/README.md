@@ -1,115 +1,57 @@
 # ZapShift Client
 
-Frontend application for ZapShift, a role-based parcel delivery platform for Bangladesh. This client handles public pages, authentication, and dashboards for User, Admin, and Rider workflows.
+Frontend single-page application for ZapShift. Built with React and Vite, this app delivers public pages, authentication, and role-based dashboards for user, admin, and rider operations.
 
-## Table of Contents
+## Live URL
 
-- Project Overview
-- Core Features
-- Tech Stack
-- Architecture Summary
-- Route Map
-- Environment Variables
-- Getting Started
-- Available Scripts
-- Build and Deployment
-- Integration Notes
-- Troubleshooting
+- https://zapshift-partner.vercel.app
 
-## Project Overview
-
-ZapShift Client is a React + Vite single-page application that enables:
-
-- Parcel booking with dynamic pricing inputs
-- Secure login/registration with Firebase Auth
-- JWT-based session handling for protected API requests
-- Role-based dashboards (user, admin, rider)
-- Tracking timeline and delivery workflow visibility
-- Payment flow with tracking number confirmation
-
-## Core Features
-
-### Public Experience
-
-- Landing pages: Home, About Us, Pricing
-- Coverage page with service center data
-- Rider application entry points
-- Auth pages (email/password and Google)
-
-### User Dashboard
-
-- Dashboard overview and parcel stats
-- Create and manage parcels
-- Pay parcel charges
-- Track parcel status and timeline
-- View invoices/payment history
-- Update profile/settings
-
-### Admin Dashboard
-
-- Operational overview and analytics
-- User management and role updates
-- Rider request review and management
-- Delivery management and workflow actions
-- Payment history visibility
-
-### Rider Dashboard
-
-- Rider overview and earnings visibility
-- Pickup and delivery task lists
-- Status confirmation flows
-- Delivery history
-
-## Tech Stack
+## Stack
 
 - React 18
 - Vite 7
 - React Router 7
-- TanStack React Query 5
+- TanStack Query 5
 - Axios
-- Firebase Authentication
-- Tailwind CSS 4 + DaisyUI 5
-- SweetAlert2
+- Firebase Auth
+- Tailwind CSS 4
+- DaisyUI 5
+- Framer Motion
+- AOS
 - Recharts
-- Lucide React / React Icons
+- SweetAlert2
+- Leaflet + React Leaflet
 
-## Architecture Summary
+## Features
 
-- Auth state is managed by Auth Provider and Firebase observer.
-- Backend JWT token is requested after login and persisted in localStorage.
-- Axios secure instance adds Bearer token to every API call.
-- 401 responses clear token and redirect user to login.
-- Dashboard route access is protected via Private, Admin, and Rider route guards.
+### Public Site
 
-## Route Map
+- Home, Pricing, About, Coverage, Send Parcel, Be a Rider
+- Responsive navigation with mobile optimization
+- Animated page transitions and scroll reveals
 
-### Public Routes
+### Authentication
 
-- `/` Home
-- `/pricing`
-- `/about-us`
-- `/coverage` (protected)
-- `/rider` (protected)
-- `/send-parcel` (protected)
-- `/pay/:id` (protected)
+- Email and password login
+- Google sign-in
+- Backend JWT token handshake after Firebase auth
+- Auto-logout based on token expiry
 
-### Auth Routes
+### Dashboard
 
-- `/login`
-- `/register`
-- `/signin` -> redirects to `/login`
-- `/signup` -> redirects to `/register`
+- User dashboard: parcels, pay, track, invoices, settings
+- Admin dashboard: users, riders, delivery management, payments
+- Rider dashboard: pickups, deliveries, history, earnings
 
-### Dashboard Routes
+## Route Access Model
 
-- `/dashboard/admin` and related admin modules
-- `/dashboard/user` and related user modules
-- `/dashboard/rider` and related rider modules
-- Shared utilities: parcel details, track, pay, invoices, settings
+- Public pages are accessible directly from navbar.
+- Send Parcel and Rider forms enforce login when submitting.
+- Dashboard routes are protected and role-aware.
 
 ## Environment Variables
 
-Create a `.env` file in `zapshift-client`:
+Create .env in zapshift-client:
 
 ```env
 VITE_API_URL=http://localhost:3000
@@ -119,90 +61,76 @@ VITE_projectId=your_firebase_project_id
 VITE_storageBucket=your_firebase_storage_bucket
 VITE_messagingSenderId=your_firebase_messaging_sender_id
 VITE_appId=your_firebase_app_id
+VITE_imgHost=your_image_host_url
 ```
 
-## Getting Started
+## Important Auth Notes
 
-### 1. Prerequisites
+- Make sure your frontend domain is listed in Firebase authorized domains.
+- Runtime config trims whitespace/newlines from Firebase env values to avoid malformed iframe URLs.
+- Login navigation waits for backend token readiness to reduce dashboard loading loops.
 
-- Node.js 18+
-- npm 9+
-- Running ZapShift server API
-- Firebase project with Authentication enabled
+## Local Development
 
-### 2. Install dependencies
+1. Install dependencies:
 
 ```bash
 npm install
 ```
 
-### 3. Configure environment
-
-- Add all required `VITE_` keys in `.env`
-- Set `VITE_API_URL` to your server URL
-
-### 4. Start development server
+2. Start development server:
 
 ```bash
 npm run dev
 ```
 
-Client runs at `http://localhost:5173` by default.
-
-## Available Scripts
-
-- `npm run dev` Start Vite development server
-- `npm run build` Build production bundle
-- `npm run preview` Preview built output locally
-- `npm run lint` Run ESLint checks
-
-## Build and Deployment
-
-### Production Build
+3. Build production bundle:
 
 ```bash
 npm run build
 ```
 
-Artifacts are generated in the `dist/` directory.
-
-### Preview Build Locally
+4. Preview production bundle:
 
 ```bash
 npm run preview
 ```
 
-## Integration Notes
+## Scripts
 
-- This client expects the server to expose `/jwt`, `/users/*`, and `/parcels/*` endpoints.
-- Tokens are stored in:
-  - `zapshift_access_token`
-  - `zapshift_access_expires_at`
-- Auto logout is scheduled based on backend token expiry.
+- npm run dev
+- npm run build
+- npm run preview
+- npm run lint
+
+## Deployment
+
+- Hosted on Vercel.
+- Production env vars are configured in Vercel project settings.
+- Frontend points to backend API URL:
+  - https://zapshift-server-ebon.vercel.app
 
 ## Troubleshooting
 
-### App redirects to login repeatedly
+### Google sign-in popup opens but app hangs on loading
 
-- Check `VITE_API_URL` correctness.
-- Confirm backend is running and `/jwt` works.
-- Verify `JWT_ACCESS_SECRET` is set server-side.
+- Confirm backend /jwt endpoint is reachable.
+- Confirm VITE_API_URL is set to deployed backend.
+- Confirm Firebase authorized domain includes your Vercel domain.
 
-### Firebase login succeeds but dashboard fails
+### Map markers not visible in Coverage page
 
-- Ensure `/users/sync` endpoint is reachable.
-- Confirm CORS and API base URL.
+- Leaflet icon path fix is already integrated for Vite production builds.
+- If markers fail after cache update, hard refresh once.
 
-### Build issues
+### Repeated redirects to login
 
-- Remove `node_modules` and reinstall:
+- Check token keys in browser local storage:
+  - zapshift_access_token
+  - zapshift_access_expires_at
+- Verify server JWT secret and CORS configuration.
 
-```bash
-rm -rf node_modules package-lock.json
-npm install
-npm run build
-```
+## Related Docs
 
-## Related Project
-
-- Server API lives in `../zapshift-server`
+- Root docs: [README.md](../README.md)
+- Server docs: [zapshift-server/README.md](../zapshift-server/README.md)

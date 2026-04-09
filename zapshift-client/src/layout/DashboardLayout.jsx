@@ -24,6 +24,7 @@ import Logo from "../components/Logo";
 import useAuth from "../hooks/useAuth";
 import useCurrentUserRole from "../hooks/useCurrentUserRole";
 import axiosSecure from "../hooks/useAxiosSecure";
+import RouteTransition from "../components/RouteTransition";
 
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -419,7 +420,9 @@ const DashboardLayout = () => {
           </div>
 
           <div className="p-4 sm:p-6">
-            <Outlet />
+            <RouteTransition>
+              <Outlet />
+            </RouteTransition>
           </div>
         </div>
       </div>

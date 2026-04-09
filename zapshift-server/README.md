@@ -1,211 +1,158 @@
 # ZapShift Server
 
-Backend API for ZapShift, a role-based parcel delivery and tracking system. This service provides authentication token issuance, parcel lifecycle management, rider/admin workflows, tracking timeline persistence, and payment record handling.
+Backend API for ZapShift. Provides authentication token issuance, parcel lifecycle management, delivery workflow orchestration, tracking timeline persistence, rider operations, and payment records.
 
-## Table of Contents
+## Live URL
 
-- Project Overview
-- Core Responsibilities
-- Tech Stack
-- Architecture Summary
-- Data Collections
-- Authentication and Authorization
-- API Endpoints
-- Environment Variables
-- Getting Started
-- Available Scripts
-- Status Workflow
-- Error Handling and Security Notes
-- Deployment Notes
+- https://zapshift-server-ebon.vercel.app
 
-## Project Overview
-
-ZapShift Server is an Express + MongoDB API that powers:
-
-- User synchronization and role management
-- JWT token generation for authenticated requests
-- Parcel CRUD and role-aware access checks
-- Payment processing state updates
-- Tracking timeline creation and lookup
-- Admin workflow actions (pickup, handoff, shipping, delivery assignment)
-- Rider workflow confirmations and earnings updates
-
-## Core Responsibilities
-
-- Validate and authorize requests by role (`user`, `admin`, `rider`)
-- Keep parcel status synchronized with tracking history
-- Generate and persist unique parcel tracking numbers
-- Record payment transactions and admin payment history
-- Support dashboards with stats and operational data
-
-## Tech Stack
+## Stack
 
 - Node.js
 - Express 5
 - MongoDB Node Driver
-- JSON Web Token (jsonwebtoken)
-- CORS
+- jsonwebtoken
 - dotenv
-- Nodemon (dev)
+- cors
+- nodemon
 
-## Architecture Summary
+## Architecture
 
-- Entry point: `index.js`
-- DB connection utility: `config/db.js`
-- Auth middleware: `middleware/authMiddleware.js`
-- Route modules:
-  - `routes/userRoutes.js`
-  - `routes/parcelRoutes.js`
-- Controller modules:
-  - `controllers/userController.js`
-  - `controllers/parcelController.js`
+- Express app module: app.js
+- Local runtime entry: index.js
+- Vercel serverless entry: api/index.js
+- DB config: config/db.js
+- Auth middleware: middleware/authMiddleware.js
+- Routes:
+  - routes/userRoutes.js
+  - routes/parcelRoutes.js
+- Controllers:
+  - controllers/userController.js
+  - controllers/parcelController.js
 
 ## Data Collections
 
-The server currently works with these MongoDB collections:
+- users
+- riderApplications
+- parcels
+- tracking
+- payments
 
-- `users`
-- `riderApplications`
-- `parcels`
-- `tracking`
-- `payments`
+Database name: zapshiftDB
 
-Database name is set to `zapshiftDB`.
+## Auth Flow
 
-## Authentication and Authorization
+1. Client authenticates with Firebase.
+2. Client calls POST /jwt with email.
+3. Server signs JWT with role and returns token + expiry.
+4. Protected routes validate bearer token and user role.
 
-### Token Issuance
+## Access Control
 
-- `POST /jwt`
-- Accepts `{ email }`
-- Looks up user role from database
-- Returns signed JWT and expiration timestamp
-
-### Middleware Chain
-
-- `verifyToken` validates Bearer token
-- `attachUserRole` resolves current role from `users` collection
-- `verifyRole(...roles)` enforces route-level access
+- verifyToken: validates bearer token
+- attachUserRole: resolves current role from database
+- verifyRole: guards role-specific endpoints
 
 ## API Endpoints
 
-Base URL example: `http://localhost:3000`
-
 ### Health
 
-- `GET /` Server health check
+- GET /
 
-### Auth
+### Token
 
-- `POST /jwt` Issue access token by email
+- POST /jwt
 
 ### Users
 
-- `POST /users/sync` Create/update user profile from auth provider
-- `GET /users/me?email=` Get current user profile (token email must match)
-- `GET /users` Admin: list users with optional filters
-- `PATCH /users/:id/role` Admin: update role
-- `GET /users/riders/list` Admin: list rider applications
-- `PATCH /users/riders/:id/review` Admin: approve/reject rider
-- `DELETE /users/riders/:id` Admin: delete rider application
-- `POST /users/rider-request` Create/update rider application
+- POST /users/sync
+- GET /users/me?email=
+- GET /users
+- PATCH /users/:id/role
+- GET /users/riders/list
+- PATCH /users/riders/:id/review
+- DELETE /users/riders/:id
+- POST /users/rider-request
 
 ### Parcels
 
-- `POST /parcels` Create parcel
-- `GET /parcels` List parcels with role-based filtering
-- `GET /parcels/:id` Get parcel by id with access control
-- `PATCH /parcels/:id/pay` Mark parcel paid, create payment and tracking info
-- `PATCH /parcels/:id/status` Admin/Rider: update status
-- `PATCH /parcels/:id/assign-riders` Admin: assign pickup/delivery riders
-- `PATCH /parcels/:id/workflow` Admin: step-driven delivery workflow actions
-- `GET /parcels/:id/tracking` Get timeline for a parcel
-- `GET /parcels/track/:query` Find parcel by tracking number or parcel id
-- `GET /parcels/admin/stats` Admin dashboard stats
-- `GET /parcels/admin/payments` Admin payment history
+- POST /parcels
+- GET /parcels
+- GET /parcels/:id
+- PATCH /parcels/:id/pay
+- PATCH /parcels/:id/status
+- PATCH /parcels/:id/assign-riders
+- PATCH /parcels/:id/workflow
+- GET /parcels/:id/tracking
+- GET /parcels/track/:query
+- GET /parcels/admin/stats
+- GET /parcels/admin/payments
+
+## Status Lifecycle
+
+1. pending
+2. paid
+3. ready-to-pickup
+4. in-transit
+5. reached-service-center
+6. shipped
+7. ready-for-delivery
+8. delivered
+
+Additional states:
+
+- failed
+- damaged
 
 ## Environment Variables
 
-Create a `.env` file in `zapshift-server`:
+Create .env in zapshift-server:
 
 ```env
 PORT=3000
 MONGODB_URI=your_mongodb_connection_string
-JWT_ACCESS_SECRET=your_strong_jwt_secret
+JWT_ACCESS_SECRET=your_strong_secret
 ```
 
-Notes:
+## Local Development
 
-- If `JWT_ACCESS_SECRET` is missing, a dev fallback is used.
-- If `MONGODB_URI` is missing, server exits on startup.
-
-## Getting Started
-
-### 1. Prerequisites
-
-- Node.js 18+
-- npm 9+
-- MongoDB Atlas or local MongoDB instance
-
-### 2. Install dependencies
+1. Install dependencies:
 
 ```bash
 npm install
 ```
 
-### 3. Configure environment
-
-- Add required keys in `.env`
-- Ensure MongoDB user has read/write permission for `zapshiftDB`
-
-### 4. Run in development
+2. Start server:
 
 ```bash
 npm run dev
 ```
 
-Server runs on `http://localhost:3000` (or `PORT` value).
+## Scripts
 
-## Available Scripts
-
-- `npm run dev` Start with nodemon
-- `npm start` Start with node
-
-## Status Workflow
-
-Core delivery statuses used across parcel and tracking flows:
-
-1. `pending`
-2. `paid`
-3. `ready-to-pickup`
-4. `in-transit`
-5. `reached-service-center`
-6. `shipped`
-7. `ready-for-delivery`
-8. `delivered`
-
-Additional statuses:
-
-- `failed`
-- `damaged`
-
-## Error Handling and Security Notes
-
-- Most protected endpoints return:
-  - `401 Unauthorized` for missing/invalid token
-  - `403 Forbidden` for role/access violations
-  - `400 Bad Request` for invalid ids or payloads
-- JWT expiry is handled by client auto-logout flow.
-- Role is derived from DB to avoid stale token role assumptions.
+- npm run dev
+- npm start
 
 ## Deployment Notes
 
-- Set `NODE_ENV=production` in deployment runtime.
-- Restrict CORS origin to trusted frontend domains.
-- Use a strong `JWT_ACCESS_SECRET` in production.
-- Add logging/monitoring (e.g., request tracing and error reporting).
-- Consider rate limiting and payload validation for internet-facing deployment.
+- Deployed on Vercel serverless.
+- Routing is configured in vercel.json.
+- Ensure MONGODB_URI and JWT_ACCESS_SECRET are set in Vercel environments.
+- Keep CORS restricted in production if needed.
 
-## Related Project
+## Common Issues
 
-- Frontend client lives in `../zapshift-client`
+### Unauthorized access on protected routes
+
+- Missing or expired bearer token.
+- Token exists but role is not allowed for endpoint.
+
+### Client login succeeds but protected calls fail
+
+- Check deployed frontend VITE_API_URL points here.
+- Confirm /jwt endpoint returns token successfully.
+
+## Related Docs
+
+- Root docs: [README.md](../README.md)
+- Client docs: [zapshift-client/README.md](../zapshift-client/README.md)

@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import lottie from 'lottie-web';
 import riderAnimation from '../../assets/animations/rider.json';
 import useAxiosSecure from "../../hooks/useAxiosSecure";
+import { useLocation, useNavigate } from 'react-router';
 
 const SendParcel = () => {
   const { register, handleSubmit, formState: { errors }, watch, reset, setValue } = useForm({
@@ -20,6 +21,8 @@ const SendParcel = () => {
   const [warehouses, setWarehouses] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const parcelType = watch('parcelType');
   const senderRegion = watch('senderRegion');
   const receiverRegion = watch('receiverRegion');
@@ -126,6 +129,7 @@ const SendParcel = () => {
             text: 'Please login to place a booking.',
             confirmButtonColor: '#ef4444',
           });
+          navigate('/login', { state: location.pathname });
           return;
         }
 
@@ -202,7 +206,7 @@ const SendParcel = () => {
 
   return (
     <div className=" mx-auto bg-white rounded-3xl p-10 pt-2 shadow-2xl">
-      <div className="px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Send A Parcel</h1>
         <p className="text-gray-700 text-sm font-medium mb-6">Enter your parcel details</p>

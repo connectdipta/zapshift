@@ -5,6 +5,16 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import useAuth from '../../hooks/useAuth';
 import GoogleLogin from './GoogleLogin';
 
+const waitForAccessToken = async (maxWaitMs = 8000, intervalMs = 200) => {
+  const start = Date.now();
+  while (Date.now() - start < maxWaitMs) {
+    const token = localStorage.getItem("zapshift_access_token");
+    if (token) return true;
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+  }
+  return false;
+};
+
 const Login = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -14,10 +24,11 @@ const Login = () => {
     formState: { errors },
   } = useForm();
   const {signInUser, loading} = useAuth();
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     signInUser(data.email, data.password)
     .then(
-      result => {console.log(result.user)
+      async () => {
+        await waitForAccessToken();
         navigate(location?.state || '/')
       })
     .catch(error => {console.log(error)})

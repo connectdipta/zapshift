@@ -50,17 +50,17 @@ export const router = createBrowserRouter([
             path: "pricing", element: <Pricing />
         },
         {
-            path: "rider", element:<PrivateRoute><Rider></Rider></PrivateRoute>
+          path: "rider", element:<Rider></Rider>
         },
         {
-            path: "coverage", element: <PrivateRoute><Coverage></Coverage></PrivateRoute>,
+          path: "coverage", element: <Coverage></Coverage>,
             loader: () => fetch('/serviceCenters.json').then(res => res.json())
         },
         {
             path: "about-us", element: <AboutUs></AboutUs>,
         },
         {
-            path: "send-parcel", element: <PrivateRoute><SendParcel></SendParcel></PrivateRoute>,
+          path: "send-parcel", element: <SendParcel></SendParcel>,
         },
         {
           path: "pay/:id",
