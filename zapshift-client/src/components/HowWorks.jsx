@@ -26,15 +26,15 @@ const cardData = [
 
 const HowWorks = () => {
   return (
-    <div className=" py-10 px-4 sm:px-6 lg:px-8">
-      <h2 className="text-3xl font-extrabold text-secondary mb-8 text-left">
+    <div className="py-8 sm:py-10 lg:py-12 px-3 sm:px-6 lg:px-8">
+      <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-secondary mb-8 text-left">
         How it Works
       </h2>
-      <div className="flex flex-wrap justify-center gap-7">
+      <div className="flex flex-wrap justify-center gap-4 sm:gap-5 lg:gap-7">
         {cardData.map((card, index) => (
           <div 
             key={index} 
-            className="bg-white p-6 rounded-xl shadow-lg w-full sm:w-60 flex flex-col items-start"
+            className="bg-white p-5 sm:p-6 rounded-xl shadow-lg w-full sm:w-72 md:w-64 lg:w-60 flex flex-col items-start"
             style={{ minHeight: '10rem' }}
           >
             <card.icon className="text-4xl text-secondary mb-3" />

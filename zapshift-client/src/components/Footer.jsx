@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router";
 import { FaLinkedinIn, FaXTwitter, FaFacebookF, FaYoutube } from "react-icons/fa6";
 import Logo from "./Logo";
 
@@ -18,22 +19,22 @@ export default function Footer() {
 
       {/* Menu */}
       <div className="border-t border-gray-700 mt-8 pt-6">
-        <ul className="flex justify-center gap-8 text-sm text-gray-300">
-          <li className="hover:text-primary active:scale-95 transition cursor-pointer">Services</li>
-          <li className="hover:text-primary active:scale-95 transition cursor-pointer">Coverage</li>
-          <li className="hover:text-primary active:scale-95 transition cursor-pointer">About Us</li>
-          <li className="hover:text-primary active:scale-95 transition cursor-pointer">Pricing</li>
-          <li className="hover:text-primary active:scale-95 transition cursor-pointer">Blog</li>
-          <li className="hover:text-primary active:scale-95 transition cursor-pointer">Contact</li>
+        <ul className="flex flex-wrap justify-center gap-3 sm:gap-6 lg:gap-8 text-xs sm:text-sm text-gray-300">
+          <li><Link className="hover:text-primary active:scale-95 transition" to="/send-parcel">Send Parcel</Link></li>
+          <li><Link className="hover:text-primary active:scale-95 transition" to="/coverage">Coverage</Link></li>
+          <li><Link className="hover:text-primary active:scale-95 transition" to="/about-us">About Us</Link></li>
+          <li><Link className="hover:text-primary active:scale-95 transition" to="/pricing">Pricing</Link></li>
+          <li><Link className="hover:text-primary active:scale-95 transition" to="/rider">Be a Rider</Link></li>
+          <li><Link className="hover:text-primary active:scale-95 transition" to="/login">Login</Link></li>
         </ul>
       </div>
 
       {/* Social Icons */}
       <div className="mt-6 flex justify-center gap-5">
-        <a className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 active:scale-90 transition" href="#"><FaLinkedinIn size={18} /></a>
-        <a className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 active:scale-90 transition" href="#"><FaXTwitter size={18} /></a>
-        <a className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 active:scale-90 transition" href="#"><FaFacebookF size={18} /></a>
-        <a className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 active:scale-90 transition" href="#"><FaYoutube size={18} /></a>
+        <a aria-label="LinkedIn" className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 active:scale-90 transition" href="https://www.linkedin.com" target="_blank" rel="noreferrer"><FaLinkedinIn size={18} /></a>
+        <a aria-label="X" className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 active:scale-90 transition" href="https://x.com" target="_blank" rel="noreferrer"><FaXTwitter size={18} /></a>
+        <a aria-label="Facebook" className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 active:scale-90 transition" href="https://www.facebook.com" target="_blank" rel="noreferrer"><FaFacebookF size={18} /></a>
+        <a aria-label="YouTube" className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 active:scale-90 transition" href="https://www.youtube.com" target="_blank" rel="noreferrer"><FaYoutube size={18} /></a>
       </div>
 
       {/* Credit */}

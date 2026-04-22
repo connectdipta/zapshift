@@ -205,17 +205,17 @@ const SendParcel = () => {
   };
 
   return (
-    <div className=" mx-auto bg-white rounded-3xl p-10 pt-2 shadow-2xl">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className=" mx-auto bg-white rounded-3xl p-4 sm:p-6 lg:p-10 pt-2 shadow-2xl">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Header */}
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Send A Parcel</h1>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Send A Parcel</h1>
         <p className="text-gray-700 text-sm font-medium mb-6">Enter your parcel details</p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <fieldset disabled={isSubmitting} className={isSubmitting ? 'space-y-6 opacity-80 pointer-events-none' : 'space-y-6'}>
           {/* Parcel Type Toggle */}
           <div>
-            <div className="flex items-center gap-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8">
               <label className="flex items-center cursor-pointer">
                 <input
                   type="radio"
@@ -238,7 +238,7 @@ const SendParcel = () => {
           </div>
 
           {/* Parcel Details - Two Columns */}
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {/* Parcel Name */}
             <div>
               <label className="block text-sm font-medium text-gray-800 mb-2">Parcel Name</label>
@@ -269,7 +269,7 @@ const SendParcel = () => {
           </div>
 
           {/* Sender Details Section */}
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left Column - Sender Details */}
             <div>
               <h3 className="text-sm font-bold text-gray-900 mb-4">Sender Details</h3>
@@ -289,7 +289,7 @@ const SendParcel = () => {
               </div>
 
               {/* Sender Region and District */}
-              <div className="mb-4 grid grid-cols-2 gap-3">
+              <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Sender Region */}
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Your Region</label>
@@ -389,7 +389,7 @@ const SendParcel = () => {
               </div>
 
               {/* Receiver Region and District */}
-              <div className="mb-4 grid grid-cols-2 gap-3">
+              <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Receiver Region */}
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Receiver Region</label>

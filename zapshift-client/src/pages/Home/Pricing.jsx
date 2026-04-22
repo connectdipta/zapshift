@@ -63,19 +63,19 @@ const Pricing = () => {
   }
 
   return (
-    <div className=" mx-auto bg-white rounded-3xl p-10 pt-2 shadow-2xl">
+    <div className=" mx-auto bg-white rounded-3xl p-4 sm:p-6 lg:p-10 pt-2 shadow-2xl">
       <div className="">
         {/* Header */}
-        <div className="py-12 px-6">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Pricing Calculator</h1>
-          <p className="text-gray-600 max-w-2xl">
+        <div className="py-8 sm:py-12 px-3 sm:px-6">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Pricing Calculator</h1>
+          <p className="text-gray-600 text-sm sm:text-base max-w-2xl">
             Enjoy fast, reliable parcel delivery with real-time tracking and zero hassle. From personal packages to business shipments — we deliver on time, every time.
           </p>
         </div>
 
         {/* Calculator Section */}
-        <div className="py-12 px-6">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
+        <div className="py-8 sm:py-12 px-3 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             {/* Left side - Inputs */}
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-8">Calculate Your Cost</h2>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router';
 // Assuming these paths are correct for your project structure
 import rightimg from '../assets/location-merchant.png'; 
 import toppng from '../assets/be-a-merchant-bg.png';
@@ -26,20 +27,20 @@ const Motive = () => {
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                            <a 
-                                href="#" 
+                            <Link 
+                                to="/register" 
                                 className="active:scale-95 inline-block px-8 py-3 rounded-full text-lg font-semibold transition-colors duration-300 bg-primary hover:bg-gray-400"
                                 style={{ color: '#133330' }}
                             >
                                 Become a Merchant
-                            </a>
+                            </Link>
                             
-                            <a 
-                                href="#" 
+                            <Link 
+                                to="/rider" 
                                 className="active:scale-95  inline-block px-8 py-3 rounded-full text-lg font-semibold border-2 border-primary text-primary transition-colors duration-300 hover:bg-white hover:text-black"
                             >
                                 Earn with ZapShift Courier
-                            </a>
+                            </Link>
                         </div>
                     </div>
 

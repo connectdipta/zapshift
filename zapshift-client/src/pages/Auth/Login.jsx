@@ -21,9 +21,12 @@ const Login = () => {
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm();
-  const {signInUser, loading} = useAuth();
+  const {signInUser, resetPassword, loading} = useAuth();
+  const [resetMessage, setResetMessage] = useState('');
+  const [isResetting, setIsResetting] = useState(false);
   const onSubmit = async (data) => {
     signInUser(data.email, data.password)
     .then(
@@ -36,6 +39,26 @@ const Login = () => {
 
   // State to toggle password visibility
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleForgotPassword = async () => {
+    const email = getValues('email')?.trim();
+    setResetMessage('');
+
+    if (!email) {
+      setResetMessage('Enter your email first, then click forgot password.');
+      return;
+    }
+
+    try {
+      setIsResetting(true);
+      await resetPassword(email);
+      setResetMessage('Password reset email sent. Please check your inbox.');
+    } catch {
+      setResetMessage('Could not send reset email. Please try again.');
+    } finally {
+      setIsResetting(false);
+    }
+  };
 
   return (
     <div className="w-full">
@@ -95,10 +118,11 @@ const Login = () => {
 
         {/* Forget Password */}
         <div className="flex justify-start">
-          <a href="#" className="text-gray-500 text-sm font-medium underline hover:text-gray-700">
+          <button type="button" onClick={handleForgotPassword} disabled={isResetting} className="text-gray-500 disabled:text-gray-400 text-sm font-medium underline hover:text-gray-700">
             Forget Password?
-          </a>
+          </button>
         </div>
+        {resetMessage && <p className="text-xs text-gray-600 -mt-3">{resetMessage}</p>}
 
         {/* Login Button */}
         <button 

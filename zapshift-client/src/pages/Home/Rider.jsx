@@ -141,19 +141,19 @@ const Rider = () => {
   }
 
   return (
-    <div className=" mx-auto bg-white rounded-3xl p-10 pt-2 shadow-2xl">
+    <div className=" mx-auto bg-white rounded-3xl p-4 sm:p-6 lg:p-10 pt-2 shadow-2xl">
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Header */}
-        <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Be a Rider</h1>
-          <p className="text-gray-600 max-w-2xl">
+        <div className="mb-8 sm:mb-12">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Be a Rider</h1>
+          <p className="text-gray-600 text-sm sm:text-base max-w-2xl">
             Enjoy fast, reliable parcel delivery with real-time tracking and zero hassle. From personal packages to business shipments — we deliver on time, every time.
           </p>
         </div>
 
         {/* Form Section */}
-        <div className="grid md:grid-cols-2 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
           {/* Left side - Form */}
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-8">Tell us about yourself</h2>
@@ -177,7 +177,7 @@ const Rider = () => {
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   <fieldset disabled={isSubmitting} className={isSubmitting ? 'space-y-6 opacity-80 pointer-events-none' : 'space-y-6'}>
                 {/* Name and Age */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Your Name</label>
                     <input
@@ -298,7 +298,7 @@ const Rider = () => {
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <fieldset disabled={isSubmitting} className={isSubmitting ? 'space-y-6 opacity-80 pointer-events-none' : 'space-y-6'}>
                 {/* Name and Age */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Your Name</label>
                     <input
@@ -326,7 +326,7 @@ const Rider = () => {
                 </div>
 
                 {/* Email and District */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Your Email</label>
                     <input
@@ -360,7 +360,7 @@ const Rider = () => {
                 </div>
 
                 {/* NID and Contact */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">NID No</label>
                     <input
