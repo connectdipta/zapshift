@@ -3,13 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import axiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
+import { MdOutlineInventory2, MdArrowForward, MdDoneAll, MdPerson, MdLocationOn } from "react-icons/md";
 
 const askForOtpTracking = async (title, subtitle) => {
   return Swal.fire({
     title,
     html: `
-      <p style="margin:0 0 12px;color:#4b5563;font-size:13px;">${subtitle}</p>
-      <div id="otp-grid" style="display:grid;grid-template-columns:repeat(6,42px);gap:8px;justify-content:center;">
+      <p style="margin:0 0 16px;color:#64748b;font-size:14px;font-weight:500;">${subtitle}</p>
+      <div id="otp-grid" style="display:grid;grid-template-columns:repeat(6,46px);gap:10px;justify-content:center;">
         <input class="otp-cell" maxlength="1" inputmode="numeric" />
         <input class="otp-cell" maxlength="1" inputmode="numeric" />
         <input class="otp-cell" maxlength="1" inputmode="numeric" />
@@ -18,45 +19,42 @@ const askForOtpTracking = async (title, subtitle) => {
         <input class="otp-cell" maxlength="1" inputmode="numeric" />
       </div>
       <style>
-        .otp-cell { border:1px solid #d1d5db; border-radius:10px; height:44px; text-align:center; font-size:20px; font-weight:700; }
-        .otp-cell:focus { outline:none; border-color:#98bc37; box-shadow:0 0 0 3px rgba(152,188,55,.2); }
+        .otp-cell { border:2px solid #f1f5f9; border-radius:14px; height:50px; text-align:center; font-size:22px; font-weight:900; color:#103d45; background:#f8fafc; transition:all 0.2s; }
+        .otp-cell:focus { outline:none; border-color:#b8d94a; background:#fff; box-shadow:0 0 0 4px rgba(184,217,74,.15); }
       </style>
     `,
     showCancelButton: true,
-    confirmButtonText: "Confirm",
-    confirmButtonColor: "#caeb66",
+    confirmButtonText: "Confirm Pickup",
+    confirmButtonColor: "#103d45",
+    cancelButtonColor: "#f1f5f9",
+    buttonsStyling: true,
+    customClass: {
+      confirmButton: 'rounded-xl px-8 py-3 text-sm font-bold',
+      cancelButton: 'rounded-xl px-8 py-3 text-sm font-bold text-gray-400'
+    },
     didOpen: () => {
       const inputs = Array.from(document.querySelectorAll(".otp-cell"));
       if (!inputs.length) return;
-
       inputs[0].focus();
-
       inputs.forEach((input, index) => {
-        input.addEventListener("input", (event) => {
-          const value = String(event.target.value || "").replace(/\D/g, "").slice(-1);
-          event.target.value = value;
-          if (value && index < inputs.length - 1) inputs[index + 1].focus();
+        input.addEventListener("input", (e) => {
+          const val = String(e.target.value || "").replace(/\D/g, "").slice(-1);
+          e.target.value = val;
+          if (val && index < inputs.length - 1) inputs[index + 1].focus();
         });
-
-        input.addEventListener("keydown", (event) => {
-          if (event.key === "Backspace" && !input.value && index > 0) {
-            inputs[index - 1].focus();
-          }
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Backspace" && !input.value && index > 0) inputs[index - 1].focus();
         });
-
-        input.addEventListener("paste", (event) => {
-          event.preventDefault();
-          const pasted = (event.clipboardData.getData("text") || "").replace(/\D/g, "").slice(0, 6);
-          pasted.split("").forEach((digit, idx) => {
-            if (inputs[idx]) inputs[idx].value = digit;
-          });
-          const nextIndex = Math.min(pasted.length, inputs.length - 1);
-          inputs[nextIndex]?.focus();
+        input.addEventListener("paste", (e) => {
+          e.preventDefault();
+          const pasted = (e.clipboardData.getData("text") || "").replace(/\D/g, "").slice(0, 6);
+          pasted.split("").forEach((digit, idx) => { if (inputs[idx]) inputs[idx].value = digit; });
+          inputs[Math.min(pasted.length, inputs.length - 1)]?.focus();
         });
       });
     },
     preConfirm: () => {
-      const value = Array.from(document.querySelectorAll(".otp-cell")).map((input) => input.value).join("");
+      const value = Array.from(document.querySelectorAll(".otp-cell")).map((i) => i.value).join("");
       if (value.length !== 6) {
         Swal.showValidationMessage("Please enter all 6 digits.");
         return false;
@@ -85,82 +83,95 @@ const RiderPickups = () => {
     const sameRoute = String(parcel.senderDistrict || "").toLowerCase() === String(parcel.receiverDistrict || "").toLowerCase();
     const nextStatus = sameRoute ? "ready-for-delivery" : "in-transit";
 
-    const input = await askForOtpTracking(
-      "Confirm Pickup",
-      "Enter the 6-digit tracking number to confirm pickup."
-    );
-
+    const input = await askForOtpTracking("Pickup Verification", "Enter the 6-digit code provided by the sender.");
     if (!input.isConfirmed || !input.value) return;
 
     if (String(input.value).trim() !== String(parcel.trackingNo || "")) {
-      await Swal.fire({
-        icon: "error",
-        title: "Tracking mismatch",
-        text: "The entered tracking number does not match this parcel.",
-        confirmButtonColor: "#ef4444",
-      });
+      await Swal.fire({ icon: "error", title: "Invalid Code", text: "The entered code does not match this parcel.", confirmButtonColor: "#ef4444" });
       return;
     }
 
-    await axiosSecure.patch(`/parcels/${parcel._id}/status`, {
-      status: nextStatus,
-      confirmTrackingNo: String(input.value).trim(),
-      message: sameRoute
-        ? "Parcel picked up and moved to ready-for-delivery."
-        : "Parcel picked up and moved to in-transit.",
-    });
+    try {
+      await axiosSecure.patch(`/parcels/${parcel._id}/status`, {
+        status: nextStatus,
+        confirmTrackingNo: String(input.value).trim(),
+        message: sameRoute
+          ? "Parcel picked up and assigned for local delivery."
+          : "Parcel picked up and moving to transport hub.",
+      });
 
-    await Swal.fire({
-      icon: "success",
-      title: "Pickup confirmed",
-      text: "Task completed. Your earning increased by Tk 20.",
-      confirmButtonColor: "#caeb66",
-    });
-
-    refetch();
+      await Swal.fire({ icon: "success", title: "Pickup Confirmed", text: "Task completed. Earnings updated!", confirmButtonColor: "#b8d94a" });
+      refetch();
+    } catch (e) {
+       await Swal.fire({ icon: "error", title: "Update Failed", text: "Could not confirm pickup at this time." });
+    }
   };
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-2xl bg-white p-6 shadow-sm">
-        <h1 className="text-3xl font-bold text-gray-900">Pickup Tasks</h1>
-        <p className="mt-2 text-gray-600">Parcels waiting for rider pickup.</p>
+    <div className="space-y-6">
+      <div className="rounded-3xl bg-white p-6 shadow-sm sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#103d45]">Pickup Tasks</h1>
+          <p className="mt-1 text-sm text-gray-500">Parcels waiting for rider pickup.</p>
+        </div>
+        <div className="bg-gray-50 px-4 py-2 rounded-xl border border-gray-100 flex items-center gap-2">
+           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Tasks</span>
+           <span className="text-xl font-black text-[#103d45]">{parcels.length}</span>
+        </div>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl bg-white p-4 shadow-sm">
-        <table className="w-full min-w-[760px] text-sm">
-          <thead>
-            <tr className="border-b border-gray-200 text-left text-gray-500">
-              <th className="px-3 py-2">Parcel ID</th>
-              <th className="px-3 py-2">Client</th>
-              <th className="px-3 py-2">Pickup Area</th>
-              <th className="px-3 py-2">Tracking No</th>
-              <th className="px-3 py-2">Assigned Rider</th>
-              <th className="px-3 py-2">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              <tr><td colSpan={6} className="px-3 py-6 text-center text-gray-500">Loading pickup tasks...</td></tr>
-            ) : parcels.length === 0 ? (
-              <tr><td colSpan={6} className="px-3 py-6 text-center text-gray-500">No pickup tasks available.</td></tr>
-            ) : (
-              parcels.map((p) => (
-                <tr key={p._id} className="border-b border-gray-100">
-                  <td className="px-3 py-2">{String(p._id).slice(-8).toUpperCase()}</td>
-                  <td className="px-3 py-2">{p.senderName || p.senderEmail}</td>
-                  <td className="px-3 py-2">{p.senderDistrict || "N/A"}</td>
-                  <td className="px-3 py-2">{p.trackingNo || "-"}</td>
-                  <td className="px-3 py-2">{p.pickupRiderName || p.pickupRiderEmail || "N/A"}</td>
-                  <td className="px-3 py-2">
-                    <button onClick={() => markPicked(p)} className="rounded-md bg-[#caeb66] px-3 py-1 text-xs font-semibold text-[#111]">Confirm PickUp</button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      {isLoading ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2].map(i => <div key={i} className="h-40 animate-pulse rounded-3xl bg-gray-100" />)}
+        </div>
+      ) : parcels.length === 0 ? (
+        <div className="rounded-3xl border border-dashed border-gray-200 bg-white p-16 text-center">
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gray-50 text-gray-200">
+            <MdOutlineInventory2 className="text-4xl" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-800">No pickups scheduled</h3>
+          <p className="mt-2 text-sm text-gray-500">You don't have any pending pickup tasks at the moment.</p>
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {parcels.map((p) => (
+            <div key={p._id} className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm space-y-4 transition hover:shadow-md">
+              <div className="flex justify-between items-start">
+                <div>
+                  <span className="font-mono text-[10px] font-bold text-gray-400 uppercase tracking-widest">#{String(p._id).slice(-8).toUpperCase()}</span>
+                  <div className="flex items-center gap-2 mt-1">
+                    <MdPerson className="text-gray-400" />
+                    <h3 className="text-base font-extrabold text-[#103d45] truncate">{p.senderName}</h3>
+                  </div>
+                </div>
+                <span className="rounded-full bg-amber-50 border border-amber-100 px-3 py-1 text-[9px] font-black uppercase text-amber-600 tracking-tighter">Waiting</span>
+              </div>
+
+              <div className="flex flex-col gap-3 border-y border-gray-50 py-4">
+                <div className="flex flex-col">
+                  <p className="text-[10px] font-bold uppercase text-gray-400 tracking-widest">Pickup Area</p>
+                  <div className="flex items-center gap-2 text-xs font-bold text-gray-700 mt-1">
+                     <MdLocationOn className="text-[#b8d94a]" />
+                     <span>{p.senderDistrict}</span>
+                  </div>
+                </div>
+                <div className="flex flex-col">
+                  <p className="text-[10px] font-bold uppercase text-gray-400 tracking-widest">Route</p>
+                  <div className="flex items-center gap-2 text-xs font-bold text-gray-700 mt-1">
+                     <span>{p.senderDistrict}</span>
+                     <MdArrowForward className="text-gray-300" />
+                     <span>{p.receiverDistrict}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                 <button onClick={() => markPicked(p)} className="w-full rounded-xl bg-[#caeb66] py-3 text-xs font-black text-[#1c2d1a] shadow-sm shadow-lime-100 transition hover:brightness-95 flex items-center justify-center gap-2"><MdDoneAll /> Confirm Pickup</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

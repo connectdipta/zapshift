@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from 'react-router';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import useAuth from '../../hooks/useAuth';
 import GoogleLogin from './GoogleLogin';
+import Swal from 'sweetalert2';
 
 const waitForAccessToken = async (maxWaitMs = 8000, intervalMs = 200) => {
   const start = Date.now();
@@ -24,17 +25,57 @@ const Login = () => {
     getValues,
     formState: { errors },
   } = useForm();
-  const {signInUser, resetPassword, loading} = useAuth();
+  const { user, signInUser, resetPassword, loading } = useAuth();
   const [resetMessage, setResetMessage] = useState('');
   const [isResetting, setIsResetting] = useState(false);
+  useEffect(() => {
+    if (!user) return;
+
+    let isCancelled = false;
+
+    const finalizeRedirect = async () => {
+      const redirectTarget = JSON.parse(localStorage.getItem('zapshift_post_login_redirect') || 'null');
+      localStorage.removeItem('zapshift_post_login_redirect');
+
+      await waitForAccessToken();
+      if (!isCancelled) {
+        navigate(redirectTarget || location?.state || '/', { replace: true });
+      }
+    };
+
+    finalizeRedirect();
+    return () => {
+      isCancelled = true;
+    };
+  }, [location?.state, navigate, user]);
+
   const onSubmit = async (data) => {
-    signInUser(data.email, data.password)
-    .then(
-      async () => {
-        await waitForAccessToken();
-        navigate(location?.state || '/')
-      })
-    .catch(error => {console.log(error)})
+    try {
+      await signInUser(data.email, data.password)
+      await waitForAccessToken();
+      navigate(location?.state || '/', { replace: true })
+    } catch (error) {
+      console.log(error);
+      let message = "An error occurred during login. Please try again.";
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+        message = "Account not found or invalid credentials.";
+      } else if (error.code === 'auth/too-many-requests') {
+        message = "Too many failed attempts. Please try again later.";
+      }
+
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'error',
+        title: message,
+        showConfirmButton: false,
+        timer: 4000,
+        timerProgressBar: true,
+        background: '#fff',
+        color: '#103d45',
+        iconColor: '#ef4444',
+      });
+    }
   };
 
   // State to toggle password visibility

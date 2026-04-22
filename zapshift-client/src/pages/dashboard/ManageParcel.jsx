@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { useQuery } from "@tanstack/react-query";
 import useParcelById from "../../hooks/useParcelById";
 import axiosSecure from "../../hooks/useAxiosSecure";
+import { MdOutlineTimeline, MdManageAccounts, MdInfo, MdHistory, MdFilterList, MdArrowBack, MdVisibility } from "react-icons/md";
 
 const timelineOrder = ["pending", "paid", "ready-to-pickup", "in-transit", "reached-service-center", "shipped", "ready-for-delivery", "delivered"];
 
@@ -92,29 +93,13 @@ const ManageParcel = () => {
 
   const runWorkflowAction = async (action, riderEmail) => {
     if (!parcel) return;
-
     try {
       setSaving(true);
-      await axiosSecure.patch(`/parcels/${parcel._id}/workflow`, {
-        action,
-        riderEmail,
-      });
-
-      await Swal.fire({
-        icon: "success",
-        title: "Workflow updated",
-        text: "Parcel delivery step updated successfully.",
-        confirmButtonColor: "#caeb66",
-      });
-
+      await axiosSecure.patch(`/parcels/${parcel._id}/workflow`, { action, riderEmail });
+      await Swal.fire({ icon: "success", title: "Workflow updated", text: "Parcel delivery step updated successfully.", confirmButtonColor: "#b8d94a" });
       await Promise.all([refetch(), refetchTracking()]);
     } catch (error) {
-      await Swal.fire({
-        icon: "error",
-        title: "Action failed",
-        text: error?.response?.data?.message || "Could not process this workflow action.",
-        confirmButtonColor: "#ef4444",
-      });
+      await Swal.fire({ icon: "error", title: "Action failed", text: error?.response?.data?.message || "Could not process action.", confirmButtonColor: "#ef4444" });
     } finally {
       setSaving(false);
     }
@@ -122,25 +107,13 @@ const ManageParcel = () => {
 
   const promptAssignRider = async (actionType) => {
     if (!canManage) {
-      await Swal.fire({
-        icon: "warning",
-        title: "Payment required",
-        text: "Only paid parcels can be managed.",
-        confirmButtonColor: "#f59e0b",
-      });
+      await Swal.fire({ icon: "warning", title: "Payment required", text: "Only paid parcels can be managed.", confirmButtonColor: "#f59e0b" });
       return;
     }
-
     if (!approvedRiders.length) {
-      await Swal.fire({
-        icon: "warning",
-        title: "No rider available",
-        text: "No approved rider found right now.",
-        confirmButtonColor: "#f59e0b",
-      });
+      await Swal.fire({ icon: "warning", title: "No rider available", text: "No approved rider found right now.", confirmButtonColor: "#f59e0b" });
       return;
     }
-
     const label = actionType === "assign-pickup" ? "pickup" : "delivery";
     const pick = await Swal.fire({
       title: `Select ${label} rider`,
@@ -149,235 +122,201 @@ const ManageParcel = () => {
       inputPlaceholder: `Choose ${label} rider`,
       showCancelButton: true,
       confirmButtonText: "Assign",
-      confirmButtonColor: "#caeb66",
+      confirmButtonColor: "#b8d94a",
       inputValidator: (value) => (!value ? `Please choose a ${label} rider` : undefined),
     });
-
     if (!pick.isConfirmed || !pick.value) return;
     await runWorkflowAction(actionType, pick.value);
   };
 
   const confirmSimpleAction = async (actionType, title, text) => {
-    const result = await Swal.fire({
-      icon: "question",
-      title,
-      text,
-      showCancelButton: true,
-      confirmButtonText: "Continue",
-      confirmButtonColor: "#caeb66",
-    });
-
+    const result = await Swal.fire({ icon: "question", title, text, showCancelButton: true, confirmButtonText: "Continue", confirmButtonColor: "#b8d94a" });
     if (!result.isConfirmed) return;
     await runWorkflowAction(actionType);
   };
 
   const renderStepCard = () => {
-    const baseCard = "rounded-xl border p-4";
-
-    if (currentPaymentStatus !== "paid") {
-      return <div className={`${baseCard} border-yellow-200 bg-yellow-50 text-yellow-700`}>Parcel is unpaid. Manage actions are disabled.</div>;
-    }
-
+    const baseCard = "rounded-2xl border p-5 shadow-sm";
+    if (currentPaymentStatus !== "paid") return <div className={`${baseCard} border-rose-100 bg-rose-50 text-rose-700 font-bold text-sm`}>Parcel is unpaid. Manage actions are disabled.</div>;
+    
     if (currentStatus === "paid") {
       return (
-        <div className={`${baseCard} border-[#d7e9a2] bg-[#f5fbe3]`}>
-          <p className="text-sm font-semibold text-[#2b3a15]">1. Assign Parcel for Pickup</p>
-          <p className="mt-1 text-xs text-[#52622b]">Choose an approved rider from origin service center.</p>
-          <button disabled={saving || ridersLoading} onClick={() => promptAssignRider("assign-pickup")} className="mt-3 rounded-lg bg-[#caeb66] px-4 py-2 text-sm font-semibold text-[#111] disabled:opacity-60">Assign Pickup Rider</button>
+        <div className={`${baseCard} border-lime-100 bg-lime-50`}>
+          <p className="text-sm font-black text-[#1c2d1a]">1. Assign Pickup Rider</p>
+          <p className="mt-1 text-xs text-[#1c2d1a]/70">Assign an approved rider to collect this parcel.</p>
+          <button disabled={saving || ridersLoading} onClick={() => promptAssignRider("assign-pickup")} className="mt-4 w-full sm:w-auto rounded-xl bg-[#b8d94a] px-6 py-2.5 text-sm font-black text-[#1c2d1a] shadow-sm transition hover:brightness-95 active:scale-95">Assign Now</button>
         </div>
       );
     }
-
-    if (currentStatus === "ready-to-pickup") {
-      return <div className={`${baseCard} border-blue-200 bg-blue-50 text-blue-700`}>2. Parcel received by pickup rider. Waiting for rider pickup confirmation.</div>;
-    }
-
+    if (currentStatus === "ready-to-pickup") return <div className={`${baseCard} border-amber-100 bg-amber-50 text-amber-700 text-sm font-bold`}>Waiting for rider pickup confirmation...</div>;
+    
     if (!sameRoute && currentStatus === "in-transit") {
       return (
-        <div className={`${baseCard} border-indigo-200 bg-indigo-50`}>
-          <p className="text-sm font-semibold text-indigo-800">3. Confirm Parcel Received</p>
-          <p className="mt-1 text-xs text-indigo-700">Confirm the parcel reached destination service center.</p>
-          <button disabled={saving} onClick={() => confirmSimpleAction("confirm-received", "Confirm Parcel Received?", "This will change status to reached-service-center.")} className="mt-3 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">Confirm Received</button>
+        <div className={`${baseCard} border-blue-100 bg-blue-50`}>
+          <p className="text-sm font-black text-blue-800">3. Confirm Receipt</p>
+          <p className="mt-1 text-xs text-blue-700/70">Confirm parcel reached destination service center.</p>
+          <button disabled={saving} onClick={() => confirmSimpleAction("confirm-received", "Confirm Receipt?", "Status will move to 'Reached Service Center'.")} className="mt-4 w-full sm:w-auto rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-black text-white shadow-sm transition hover:brightness-110 active:scale-95">Confirm Received</button>
         </div>
       );
     }
-
     if (!sameRoute && currentStatus === "reached-service-center") {
       return (
-        <div className={`${baseCard} border-sky-200 bg-sky-50`}>
-          <p className="text-sm font-semibold text-sky-800">4. Ship Parcel</p>
-          <p className="mt-1 text-xs text-sky-700">Ship parcel from destination service center for final delivery allocation.</p>
-          <button disabled={saving} onClick={() => confirmSimpleAction("ship-parcel", "Ship Parcel?", "This will change status to shipped.")} className="mt-3 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">Ship Parcel</button>
+        <div className={`${baseCard} border-indigo-100 bg-indigo-50`}>
+          <p className="text-sm font-black text-indigo-800">4. Dispatch for Delivery</p>
+          <p className="mt-1 text-xs text-indigo-700/70">Dispatch from hub for final delivery allocation.</p>
+          <button disabled={saving} onClick={() => confirmSimpleAction("ship-parcel", "Ship Parcel?", "Status will move to 'Shipped'.")} className="mt-4 w-full sm:w-auto rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-black text-white shadow-sm transition hover:brightness-110 active:scale-95">Ship Parcel</button>
         </div>
       );
     }
-
     if ((!sameRoute && currentStatus === "shipped") || (sameRoute && currentStatus === "in-transit")) {
       return (
-        <div className={`${baseCard} border-orange-200 bg-orange-50`}>
-          <p className="text-sm font-semibold text-orange-800">5. Assign Parcel for Delivery</p>
-          <p className="mt-1 text-xs text-orange-700">Assign a delivery rider for last-mile delivery.</p>
-          <button disabled={saving || ridersLoading} onClick={() => promptAssignRider("assign-delivery")} className="mt-3 rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">Assign Delivery Rider</button>
+        <div className={`${baseCard} border-orange-100 bg-orange-50`}>
+          <p className="text-sm font-black text-orange-800">5. Assign Delivery Rider</p>
+          <p className="mt-1 text-xs text-orange-700/70">Assign a rider for the last-mile delivery.</p>
+          <button disabled={saving || ridersLoading} onClick={() => promptAssignRider("assign-delivery")} className="mt-4 w-full sm:w-auto rounded-xl bg-orange-500 px-6 py-2.5 text-sm font-black text-white shadow-sm transition hover:brightness-110 active:scale-95">Assign Delivery Rider</button>
         </div>
       );
     }
-
-    if (currentStatus === "ready-for-delivery") {
-      return <div className={`${baseCard} border-emerald-200 bg-emerald-50 text-emerald-700`}>6. Parcel is ready for rider delivery confirmation.</div>;
-    }
-
-    if (currentStatus === "delivered") {
-      return <div className={`${baseCard} border-green-200 bg-green-50 text-green-700`}>7. Parcel delivery completed successfully.</div>;
-    }
-
-    return <div className={`${baseCard} border-gray-200 bg-gray-50 text-gray-600`}>Current status: {currentStatus.replace(/-/g, " ")}.</div>;
+    if (currentStatus === "ready-for-delivery") return <div className={`${baseCard} border-emerald-100 bg-emerald-50 text-emerald-700 text-sm font-bold`}>Out for delivery. Waiting for rider confirmation...</div>;
+    if (currentStatus === "delivered") return <div className={`${baseCard} border-green-100 bg-green-50 text-green-700 text-sm font-bold`}>Parcel delivered successfully!</div>;
+    return <div className={`${baseCard} border-gray-100 bg-gray-50 text-gray-600 font-bold text-sm`}>Current status: {currentStatus.replace(/-/g, " ")}</div>;
   };
 
-  if (isLoading) {
-    return <div className="rounded-2xl bg-white p-8 text-sm text-gray-600 shadow-sm">Loading parcel data...</div>;
-  }
-
-  if (isError || !parcel) {
-    return <div className="rounded-2xl bg-white p-8 text-sm text-red-500 shadow-sm">Parcel not found.</div>;
-  }
-
-  const normalized = currentStatus;
+  if (isLoading) return <div className="rounded-3xl bg-white p-12 text-center text-gray-500 shadow-sm animate-pulse">Loading secure parcel data...</div>;
+  if (isError || !parcel) return <div className="rounded-3xl bg-white p-12 text-center text-red-500 shadow-sm">Parcel not found or access denied.</div>;
 
   return (
-    <div className="space-y-5">
-      <div className="rounded-2xl bg-white p-6 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Manage Parcel</h1>
-            <p className="mt-1 text-gray-600">Parcel ID: {String(parcel._id).slice(-8).toUpperCase()}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link to={`/dashboard/parcels/${parcel._id}`} className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">
-              View
-            </Link>
-            <button onClick={() => navigate("/dashboard/parcels")} className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">
-              Back
-            </button>
-          </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="rounded-3xl bg-white p-6 shadow-sm sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#103d45]">Manage Parcel</h1>
+          <p className="mt-1 text-xs font-mono font-bold text-gray-400 uppercase tracking-widest">ID: #{String(parcel._id).slice(-10).toUpperCase()}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={() => navigate(`/dashboard/parcels/${parcel._id}`)} className="rounded-xl border border-gray-100 bg-white px-4 py-2.5 text-xs font-bold text-gray-600 shadow-sm transition hover:bg-gray-50 flex items-center gap-1.5"><MdVisibility /> View</button>
+          <button onClick={() => navigate(-1)} className="rounded-xl border border-gray-100 bg-white px-4 py-2.5 text-xs font-bold text-gray-600 shadow-sm transition hover:bg-gray-50 flex items-center gap-1.5"><MdArrowBack /> Back</button>
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1.3fr_0.9fr]">
-        <div className="rounded-2xl bg-white p-5 shadow-sm">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-xl font-bold text-gray-900">Parcel Details</h2>
-            <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${currentPaymentStatus === "paid" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
-              {currentPaymentStatus}
-            </span>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2 text-sm text-gray-700">
-            <p><span className="font-semibold">Client:</span> {parcel.senderName || parcel.senderEmail}</p>
-            <p><span className="font-semibold">Receiver:</span> {parcel.receiverName || "N/A"}</p>
-            <p><span className="font-semibold">Route:</span> {parcel.senderDistrict || "-"} {"->"} {parcel.receiverDistrict || "-"}</p>
-            <p><span className="font-semibold">Weight:</span> {parcel.parcelWeight} KG</p>
-            <p><span className="font-semibold">Tracking No:</span> {parcel.trackingNo || "Not generated"}</p>
-            <p><span className="font-semibold">Payment:</span> {currentPaymentStatus}</p>
-            <p><span className="font-semibold">Current Status:</span> {normalized}</p>
-            <p><span className="font-semibold">Pickup Rider:</span> {parcel.pickupRiderName || parcel.pickupRiderEmail || "Not assigned"}</p>
-            <p><span className="font-semibold">Delivery Rider:</span> {parcel.deliveryRiderName || parcel.deliveryRiderEmail || "Not assigned"}</p>
-          </div>
-
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
-            {[
-              { label: "Payment", value: currentPaymentStatus, tone: currentPaymentStatus === "paid" ? "bg-green-50 text-green-700" : "bg-yellow-50 text-yellow-700" },
-              { label: "Parcel Status", value: normalized, tone: "bg-[#f7f7f7] text-gray-700" },
-              { label: "Assignment", value: parcel.pickupRiderEmail && parcel.deliveryRiderEmail ? "Assigned" : "Pending", tone: parcel.pickupRiderEmail && parcel.deliveryRiderEmail ? "bg-[#eef6d6] text-[#6e8f17]" : "bg-[#fff0f0] text-[#c15b5b]" },
-            ].map((item) => (
-              <div key={item.label} className={`rounded-xl border border-gray-100 p-3 ${item.tone}`}>
-                <p className="text-xs font-semibold uppercase tracking-wide opacity-70">{item.label}</p>
-                <p className="mt-1 text-sm font-bold">{item.value}</p>
+      <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
+        {/* Info Column */}
+        <section className="space-y-6">
+           <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="flex items-center gap-2 text-xl font-bold text-[#103d45]"><MdInfo className="text-[#b8d94a]"/> Parcel Details</h2>
+                <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest border ${currentPaymentStatus === "paid" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-amber-50 text-amber-600 border-amber-100"}`}>{currentPaymentStatus}</span>
               </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-2xl bg-white p-5 shadow-sm">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <h2 className="text-xl font-bold text-gray-900">Actions</h2>
-            <span className="text-xs text-gray-500">Admin only</span>
-          </div>
-
-          {renderStepCard()}
-
-          <ol className="mt-4 list-decimal space-y-1 pl-5 text-xs text-gray-500">
-            <li>Assign pickup rider when status is paid.</li>
-            <li>Rider confirms pickup and status moves to in-transit or ready-for-delivery.</li>
-            {!sameRoute ? <li>Confirm reached service center then ship parcel.</li> : null}
-            {!sameRoute ? <li>Assign delivery rider after shipped.</li> : null}
-            <li>Delivery rider confirms delivery at the end.</li>
-          </ol>
-        </div>
-      </div>
-
-      <div className="rounded-2xl bg-white p-5 shadow-sm space-y-4">
-        <h2 className="mb-4 text-xl font-bold text-gray-900">Timeline</h2>
-        <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-7">
-          {timelineOrder.map((item) => {
-            const active = timelineOrder.indexOf(item) <= timelineOrder.indexOf(normalized);
-            return (
-              <div key={item} className={`rounded-lg border px-3 py-3 text-center text-xs font-semibold ${active ? "border-[#caeb66] bg-[#f3f9dd] text-[#1f1f1f]" : "border-gray-200 bg-white text-gray-400"}`}>
-                {item}
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="rounded-xl border border-gray-100 bg-[#fafafa] p-3">
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <h3 className="text-sm font-semibold text-gray-700">Workflow audit log</h3>
-            <button
-              onClick={() => {
-                setActionFilter("all");
-                setUserFilter("all");
-                setDateFrom("");
-                setDateTo("");
-              }}
-              className="rounded-md border border-gray-300 px-2 py-1 text-[11px] text-gray-600 hover:bg-gray-100"
-            >
-              Reset filters
-            </button>
-          </div>
-
-          <div className="mb-3 grid gap-2 md:grid-cols-2 lg:grid-cols-4">
-            <select value={actionFilter} onChange={(e) => setActionFilter(e.target.value)} className="rounded-md border border-gray-300 px-2 py-2 text-xs focus:outline-none focus:border-[var(--color-primary)]">
-              <option value="all">All actions</option>
-              {auditActions.map((status) => (
-                <option key={status} value={status}>{status.replace(/-/g, " ")}</option>
-              ))}
-            </select>
-
-            <select value={userFilter} onChange={(e) => setUserFilter(e.target.value)} className="rounded-md border border-gray-300 px-2 py-2 text-xs focus:outline-none focus:border-[var(--color-primary)]">
-              <option value="all">All users</option>
-              {auditUsers.map((user) => (
-                <option key={user} value={user}>{user}</option>
-              ))}
-            </select>
-
-            <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="rounded-md border border-gray-300 px-2 py-2 text-xs focus:outline-none focus:border-[var(--color-primary)]" />
-            <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="rounded-md border border-gray-300 px-2 py-2 text-xs focus:outline-none focus:border-[var(--color-primary)]" />
-          </div>
-
-          <div className="space-y-2">
-            {filteredTimelineEvents.length === 0 ? (
-              <p className="text-xs text-gray-500">No tracking logs yet.</p>
-            ) : (
-              filteredTimelineEvents.map((event) => (
-                <div key={event._id} className="rounded-lg border border-gray-100 bg-white px-3 py-2 text-xs">
-                  <p className="font-semibold text-gray-700">{String(event.status || "pending").replace(/-/g, " ")}</p>
-                  <p className="text-gray-500">{event.message}</p>
-                  <p className="text-[11px] text-gray-500">By: {event.actorEmail || "system@zapshift.local"}</p>
-                  <p className="text-[11px] text-gray-400">{event.createdAt ? new Date(event.createdAt).toLocaleString() : "-"}</p>
+              
+              <div className="grid gap-x-8 gap-y-6 sm:grid-cols-2">
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Sender</p>
+                    <p className="text-sm font-bold text-[#103d45]">{parcel.senderName}</p>
+                    <p className="text-xs text-gray-500">{parcel.senderEmail}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Receiver</p>
+                    <p className="text-sm font-bold text-[#103d45]">{parcel.receiverName}</p>
+                    <p className="text-xs text-gray-500">{parcel.receiverPhone}</p>
+                  </div>
                 </div>
-              ))
-            )}
-          </div>
-        </div>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Route & Logistics</p>
+                    <p className="text-sm font-bold text-[#103d45]">{parcel.senderDistrict} → {parcel.receiverDistrict}</p>
+                    <p className="text-xs text-gray-500">{parcel.parcelWeight} kg | {parcel.parcelType}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Tracking Info</p>
+                    <p className="text-sm font-black text-[#b8d94a]">{parcel.trackingNo || "PENDING"}</p>
+                    <p className="text-xs text-gray-500">Amount: Tk {parcel.amount}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl bg-gray-50 p-4 border border-gray-100">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pickup Rider</p>
+                  <p className="text-xs font-bold text-[#103d45] mt-1 truncate">{parcel.pickupRiderName || "Not assigned"}</p>
+                </div>
+                <div className="rounded-2xl bg-gray-50 p-4 border border-gray-100">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Delivery Rider</p>
+                  <p className="text-xs font-bold text-[#103d45] mt-1 truncate">{parcel.deliveryRiderName || "Not assigned"}</p>
+                </div>
+              </div>
+           </div>
+
+           <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
+              <h2 className="mb-6 flex items-center gap-2 text-xl font-bold text-[#103d45]"><MdOutlineTimeline className="text-[#b8d94a]"/> Visual Timeline</h2>
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                {timelineOrder.map((item) => {
+                  const active = timelineOrder.indexOf(item) <= timelineOrder.indexOf(currentStatus);
+                  return (
+                    <div key={item} className={`rounded-xl border px-4 py-3 text-center text-[10px] font-black uppercase tracking-wider transition-all ${active ? "border-[#b8d94a] bg-[#faffed] text-[#1c2d1a] shadow-sm" : "border-gray-100 bg-white text-gray-300"}`}>
+                      {item.replace(/-/g, " ")}
+                    </div>
+                  );
+                })}
+              </div>
+           </div>
+        </section>
+
+        {/* Action Column */}
+        <section className="space-y-6">
+           <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="flex items-center gap-2 text-xl font-bold text-[#103d45]"><MdManageAccounts className="text-[#b8d94a]"/> Workflow Action</h2>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">System Engine</span>
+              </div>
+              {renderStepCard()}
+              <div className="mt-6 rounded-2xl bg-gray-50 p-5">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Admin Instructions</p>
+                <ul className="space-y-2 text-[11px] font-medium text-gray-500">
+                  <li className="flex gap-2"><span>•</span> Assign pickup rider when parcel is paid.</li>
+                  <li className="flex gap-2"><span>•</span> Hub confirmation needed for cross-district parcels.</li>
+                  <li className="flex gap-2"><span>•</span> Last-mile delivery requires rider assignment.</li>
+                </ul>
+              </div>
+           </div>
+
+           {/* Audit Log */}
+           <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="flex items-center gap-2 text-xl font-bold text-[#103d45]"><MdHistory className="text-[#b8d94a]"/> Audit Log</h2>
+                <button onClick={() => { setActionFilter("all"); setUserFilter("all"); setDateFrom(""); setDateTo(""); }} className="text-[10px] font-bold text-[#b8d94a] uppercase tracking-widest hover:underline">Reset</button>
+              </div>
+
+              <div className="mb-6 grid gap-2 sm:grid-cols-2">
+                <select value={actionFilter} onChange={(e) => setActionFilter(e.target.value)} className="rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-[10px] font-bold text-gray-600 outline-none focus:border-[#b8d94a]">
+                  <option value="all">All Actions</option>
+                  {auditActions.map(s => <option key={s} value={s}>{s.replace(/-/g, " ")}</option>)}
+                </select>
+                <select value={userFilter} onChange={(e) => setUserFilter(e.target.value)} className="rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-[10px] font-bold text-gray-600 outline-none focus:border-[#b8d94a]">
+                  <option value="all">All Users</option>
+                  {auditUsers.map(u => <option key={u} value={u}>{u}</option>)}
+                </select>
+              </div>
+
+              <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide">
+                {filteredTimelineEvents.length === 0 ? (
+                  <p className="py-12 text-center text-xs text-gray-400 font-medium italic">No tracking history found.</p>
+                ) : (
+                  filteredTimelineEvents.map((event) => (
+                    <div key={event._id} className="relative pl-5 border-l-2 border-gray-100">
+                      <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-gray-200" />
+                      <p className="text-xs font-black text-[#103d45] uppercase tracking-tight">{String(event.status || "").replace(/-/g, " ")}</p>
+                      <p className="mt-1 text-[11px] text-gray-500 leading-relaxed">{event.message}</p>
+                      <div className="mt-2 flex items-center justify-between text-[9px] font-bold uppercase tracking-widest text-gray-400">
+                        <span>{event.actorEmail || "system"}</span>
+                        <span>{event.createdAt ? new Date(event.createdAt).toLocaleDateString() : "-"}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+           </div>
+        </section>
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ const RootLayout = () => {
         <div>
             <Navbar />
             <motion.div
-              className="max-w-10/12 mx-auto max-sm:max-w-11/12"
+              className="w-10/12 mx-auto max-sm:w-11/12"
               variants={fadeUp}
               initial="hidden"
               animate="visible"

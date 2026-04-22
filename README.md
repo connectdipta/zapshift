@@ -1,96 +1,63 @@
-# ZapShift
+# ZapShift Logistics Platform
 
-Role-based parcel delivery platform with real-time tracking, workflow-driven operations, and nationwide coverage support.
+ZapShift is an enterprise-grade, role-based parcel delivery platform designed for high-efficiency logistics. It features real-time tracking, workflow-driven operations, and a nationwide coverage network with a premium user experience.
 
-## Live Deployments
+## 🔗 Live Deployments
 
-- Frontend: https://zapshift-partner.vercel.app
-- Backend API: https://zapshift-server-ebon.vercel.app
+*   **Frontend Application**: [https://zapshift-partner.vercel.app](https://zapshift-partner.vercel.app)
+*   **Backend API**: [https://zapshift-server-ebon.vercel.app](https://zapshift-server-ebon.vercel.app)
 
-## Latest Update (April 2026)
+## 🚀 Recent Professionalization (April 2026)
 
-- Public pages were updated with mobile-first responsive improvements.
-- Frontend was redeployed to Vercel after responsiveness fixes.
-- Backend was also redeployed to Vercel and verified as healthy (HTTP 200).
+The platform recently underwent a major UI/UX overhaul to reach enterprise standards:
+*   **Premium Public Pages**: Redesigned "About Us", "Pricing", and "Rider Onboarding" with high-contrast design tokens, interactive motion components, and unified container structures.
+*   **Enhanced Functional Stability**: Fixed parcel submission flows, session-aware navigation, and dashboard map scaling.
+*   **Brand Integrity**: Removed all placeholder content ("Posture Pro", "Lorem Ipsum") and unified typography and color palettes using the "Midnight/Lime" aesthetic.
+*   **Icon Stability**: Resolved Material Design icon import issues for stable production bundling.
 
-## Repository Structure
+## 📂 Repository Structure
 
-- [zapshift-client](zapshift-client) React + Vite frontend app
-- [zapshift-server](zapshift-server) Express + MongoDB backend API
+*   [zapshift-client](zapshift-client): React + Vite frontend application with Framer Motion animations.
+*   [zapshift-server](zapshift-server): Node.js + Express + MongoDB backend API with JWT security.
 
-## Documentation
+## 👥 Role-Based Architecture
 
-- Frontend docs: [zapshift-client/README.md](zapshift-client/README.md)
-- Backend docs: [zapshift-server/README.md](zapshift-server/README.md)
+ZapShift supports three distinct user experiences:
+*   **User Dashboard**: Create parcels, instant price estimation, live tracking, and digital invoices.
+*   **Admin Console**: Comprehensive management of users, riders, shipping operations, and payment reconciliation.
+*   **Rider Interface**: specialized interface for pickup/delivery tasks, earning tracking, and secure OTP-based delivery confirmation.
 
-## Product Summary
+## ✨ Key Features
 
-ZapShift supports three primary roles:
+*   **End-to-End Parcel Lifecycle**: Complete workflow from booking and automated pricing to final delivery.
+*   **Interactive Coverage Map**: Searchable nationwide coverage grid with synchronized hub locations.
+*   **Smart Pricing Engine**: Dynamic price calculation based on weight, parcel type, and regional transit taxes.
+*   **Secure Authentication**: Firebase/Google Auth integration with hardened backend JWT validation.
+*   **Real-Time Tracking**: Unique 6-digit tracking IDs with full status history and actor metadata.
 
-- User: create parcels, pay charges, track delivery, view history
-- Admin: manage users, riders, shipping operations, and payment visibility
-- Rider: handle pickups/deliveries with tracking confirmation and earnings updates
+## 📊 Logistics Workflow
 
-## Key Features
+1.  **Pending**: Initial booking received.
+2.  **Paid**: Payment confirmed (Automatic or Manual).
+3.  **Ready-to-Pickup**: Assigned to regional hub.
+4.  **In-Transit**: Parcel is moving between nodes.
+5.  **Reached-Service-Center**: Arrived at destination hub.
+6.  **Shipped/Out-for-Delivery**: Last-mile rider assigned.
+7.  **Delivered**: Success confirmation via OTP/Digital Signature.
 
-- End-to-end parcel lifecycle from booking to delivery
-- Tracking timeline with status updates and actor metadata
-- Payment success flow with unique 6-digit tracking number
-- Admin delivery workflow actions by step and status
-- Rider confirmation flow with secure tracking validation
-- Public pages and role-based dashboard routing
-- Google/Firebase authentication with backend JWT integration
+## 🛠️ Tech Stack
 
-## Workflow Statuses
+*   **Frontend**: React, Tailwind CSS, Framer Motion, Leaflet Maps, Swiper.js, Lottie Animations.
+*   **Backend**: Node.js, Express, MongoDB, Firebase Admin, JWT.
+*   **Infrastructure**: Vercel (Frontend & Serverless), MongoDB Atlas.
 
-1. pending
-2. paid
-3. ready-to-pickup
-4. in-transit
-5. reached-service-center
-6. shipped
-7. ready-for-delivery
-8. delivered
+## 🏁 Quick Start
 
-Additional operational statuses:
+1.  Clone the repository.
+2.  Configure `.env` files in both `/zapshift-client` and `/zapshift-server`.
+3.  Install dependencies: `npm install` in both directories.
+4.  Run Backend: `cd zapshift-server && npm start`.
+5.  Run Frontend: `cd zapshift-client && npm run dev`.
 
-- failed
-- damaged
-
-## Pricing Reference
-
-| Parcel Type | Weight | Within City | Outside City/District |
-| --- | --- | --- | --- |
-| Document | Any | 60 BDT | 80 BDT |
-| Non-Document | Up to 3kg | 110 BDT | 150 BDT |
-| Non-Document | Over 3kg | +40 BDT/kg | +40 BDT/kg + 40 BDT extra |
-
-## Quick Start
-
-1. Clone repository.
-2. Configure environment files for client and server.
-3. Start backend API.
-4. Start frontend app.
-
-See setup instructions in:
-
-- [zapshift-client/README.md](zapshift-client/README.md)
-- [zapshift-server/README.md](zapshift-server/README.md)
-
-## Deployment
-
-- Frontend is deployed on Vercel.
-- Backend is deployed on Vercel Serverless functions.
-- Ensure frontend environment points to the deployed backend URL.
-
-Current production endpoints:
-
-- Frontend: https://zapshift-partner.vercel.app
-- Backend: https://zapshift-server-ebon.vercel.app
-
-## Recent Production Notes
-
-- Leaflet marker rendering was fixed for Vite production builds.
-- Firebase env values are trimmed in runtime to avoid hidden newline issues.
-- Login redirect flow now waits for backend JWT to reduce dashboard loading loops.
-
+---
+© 2025 ZapShift — Designed & Developed by **Dipta Acharjee**

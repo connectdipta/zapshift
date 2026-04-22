@@ -4,45 +4,41 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 const faqData = [
   {
-    question: "How does this posture corrector work?",
+    question: "How long does it take to deliver a parcel?",
     answer:
-      "A posture corrector works by providing support and gentle alignment to your shoulders, back, and spine, encouraging you to maintain proper posture throughout the day. Here's how it typically functions: A posture corrector works by providing support and gentle alignment to your shoulders.",
+      "For inside Dhaka, we deliver within 24 hours. For outside Dhaka, it usually takes 48 to 72 hours depending on the distance and coverage area.",
   },
   {
-    question: "Is it suitable for all ages and body types?",
+    question: "How can I track my parcel?",
     answer:
-      "Most posture correctors are designed to be adjustable and fit a wide range of body types. However, children, pregnant women, and individuals with serious existing medical conditions should consult a doctor before use.",
+      "You can track your parcel by entering your 6-digit tracking number or Parcel ID in the 'Track Parcel' section of our website or dashboard.",
   },
   {
-    question: "Does it really help with back pain and posture improvement?",
+    question: "What are your delivery charges?",
     answer:
-      "Yes, consistent use can significantly improve posture by retraining muscle memory. It can also help relieve certain types of back pain caused by slouching or poor sitting habits.",
+      "Our delivery charges depend on the weight of the parcel and the delivery location. You can find a detailed breakdown in our 'Pricing' section.",
   },
   {
-    question: "Does it have smart features like vibration alerts?",
+    question: "Do you offer Cash on Delivery (COD)?",
     answer:
-    "Some premium models include smart features like vibration alerts that trigger when you start slouching, encouraging immediate self-correction. Check the specific product features for details.",
+    "Yes, we offer nationwide Cash on Delivery service. We collect the payment from the receiver and disburse it to the sender's account securely.",
   },
   {
-    question: "How will I be notified when the product is back in stock?",
+    question: "How do I become a rider for ZapShift?",
     answer:
-    "You can sign up for a back-in-stock notification on the product page. We will send you an email alert as soon as the item is available for purchase again.",
+    "You can apply to be a rider by clicking the 'Be a Rider' link in the navbar. Fill out the application form with your details and NID, and our team will review your application.",
   },
   {
-    question: "What is your return policy for posture correctors?",
-    answer: "We offer a 30-day money-back guarantee. If you are not satisfied with your purchase, you can return it within 30 days for a full refund.",
+    question: "What should I do if my parcel is damaged?",
+    answer: "We take extreme care with every parcel. However, if any damage occurs during transit, please contact our support team immediately with your tracking number and photos of the damage.",
   },
   {
-    question: "How long should I wear the posture corrector each day?",
-    answer: "It is generally recommended to start with 30 minutes to an hour per day and gradually increase the duration as your body adjusts. Avoid wearing it for more than 4 hours straight.",
+    question: "Can I cancel a delivery request?",
+    answer: "You can cancel a delivery request from your dashboard as long as the parcel has not been picked up by a rider yet.",
   },
   {
-    question: "Can I wear it under my clothes?",
-    answer: "Yes, most of our models are designed to be slim and discreet, allowing them to be comfortably worn under loose-fitting clothing.",
-  },
-  {
-    question: "Do you ship internationally?",
-    answer: "Yes, we offer worldwide shipping. Shipping costs and delivery times vary based on the destination country.",
+    question: "Do you provide international shipping?",
+    answer: "Currently, we only operate within Bangladesh. We are working on expanding our services to international destinations in the future.",
   },
 ];
 
@@ -63,29 +59,28 @@ const FAQSection = () => {
   const isShowMoreVisible = visibleCount < faqData.length;
 
   return (
-    <motion.section className="bg-gray-50 py-12 sm:py-16 px-4 md:px-8 rounded-3xl sm:rounded-4xl mt-4" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.5 }}>
-      <div className="max-w-4xl mx-auto">
+    <motion.section className="bg-gray-50 py-12 sm:py-16 px-4 md:px-8 rounded-3xl sm:rounded-[3rem] mt-4" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.5 }}>
+      <div className="max-w-7xl mx-auto px-4">
         
         <motion.div className="text-center mb-10" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.45 }}>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-secondary tracking-wide">
-            Frequently Asked Question (FAQ)
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#103d45] tracking-tight">
+            Frequently Asked Questions
           </h2>
           <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto">
-            Enhance posture, mobility, and well-being effortlessly with Posture Pro. Achieve proper alignment, reduce pain, and strengthen your body with ease!
+            Everything you need to know about our parcel delivery services, tracking, and rider opportunities.
           </p>
         </motion.div>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {faqData.slice(0, visibleCount).map((item, index) => {
             const isOpen = openIndex === index;
             return (
               <motion.div 
                 key={index} 
                 className={`
-                  bg-white rounded-lg shadow-sm overflow-hidden border-2 
-                  ${isOpen ? 'border-teal-300' : 'border-gray-200'}
-                  transition-all duration-300 transform group
-                  opacity-100 translate-y-0
+                  bg-white rounded-2xl shadow-sm overflow-hidden border-2 
+                  ${isOpen ? 'border-[#b8d94a]' : 'border-gray-100'}
+                  transition-all duration-300
                 `}
                 initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -94,16 +89,16 @@ const FAQSection = () => {
               >
                 <button
                   className={`
-                    w-full flex justify-between items-center gap-4 p-4 sm:p-5 text-left font-semibold 
-                    ${isOpen ? 'text-teal-700 bg-teal-50' : 'text-gray-700 hover:bg-gray-50'}
+                    w-full flex justify-between items-center gap-4 p-4 sm:p-6 text-left font-bold 
+                    ${isOpen ? 'text-[#103d45] bg-[#faffed]' : 'text-gray-700 hover:bg-gray-50'}
                   `}
                   onClick={() => toggleFAQ(index)}
                 >
-                  {item.question}
+                  <span className="text-sm sm:text-base">{item.question}</span>
                   {isOpen ? (
-                    <FiChevronUp className="text-xl transition-transform duration-300" />
+                    <FiChevronUp className="text-xl shrink-0 transition-transform duration-300" />
                   ) : (
-                    <FiChevronDown className="text-xl transition-transform duration-300" />
+                    <FiChevronDown className="text-xl shrink-0 transition-transform duration-300" />
                   )}
                 </button>
 
@@ -116,9 +111,9 @@ const FAQSection = () => {
                       transition={{ duration: 0.28, ease: 'easeOut' }}
                       className="overflow-hidden"
                     >
-                      <p className="text-tertiary text-sm border-t border-gray-200 pt-4 sm:pt-5 p-4 sm:p-5 pt-0">
+                      <div className="text-gray-600 text-sm border-t border-gray-100 p-4 sm:p-6 leading-relaxed">
                         {item.answer}
-                      </p>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -126,13 +121,14 @@ const FAQSection = () => {
             );
           })}
         </div>
+        
         {isShowMoreVisible && (
-          <motion.div className="flex justify-center mt-10 sm:mt-12" initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.45 }}>
+          <motion.div className="flex justify-center mt-10" initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.45 }}>
             <motion.button
               onClick={handleShowMore}
-              className="flex items-center gap-2 px-6 sm:px-8 py-3 rounded-full text-sm sm:text-lg font-semibold text-gray-800 transition-shadow duration-300 shadow-md hover:shadow-lg"
-              style={{ backgroundColor: '#B8EA5C' }}
-              whileHover={{ y: -2, scale: 1.01 }}
+              className="flex items-center gap-2 px-8 py-3.5 rounded-full text-sm sm:text-base font-bold text-[#1c2d1a] transition-all shadow-md hover:shadow-xl hover:brightness-95 active:scale-95"
+              style={{ backgroundColor: '#B8D94A' }}
+              whileHover={{ y: -2 }}
               whileTap={{ scale: 0.98 }}
             >
               See More FAQ's

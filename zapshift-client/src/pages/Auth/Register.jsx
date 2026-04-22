@@ -1,10 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import useAuth from '../../hooks/useAuth';
 import GoogleLogin from './GoogleLogin';
 import axios from 'axios';
+import Swal from 'sweetalert2';
+
+const waitForAccessToken = async (maxWaitMs = 8000, intervalMs = 200) => {
+  const start = Date.now();
+  while (Date.now() - start < maxWaitMs) {
+    const token = localStorage.getItem("zapshift_access_token");
+    if (token) return true;
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+  }
+  return false;
+};
 
 const Register = () => {
   const location = useLocation()
@@ -16,7 +27,28 @@ const Register = () => {
     watch,
   } = useForm();
 
-  const { registerUser, updateUserProfile, loading } = useAuth();
+  const { user, registerUser, updateUserProfile, loading } = useAuth();
+  useEffect(() => {
+    if (!user) return;
+
+    let isCancelled = false;
+
+    const finalizeRedirect = async () => {
+      const redirectTarget = JSON.parse(localStorage.getItem('zapshift_post_login_redirect') || 'null');
+      localStorage.removeItem('zapshift_post_login_redirect');
+
+      await waitForAccessToken();
+      if (!isCancelled) {
+        navigate(redirectTarget || location?.state || '/', { replace: true });
+      }
+    };
+
+    finalizeRedirect();
+    return () => {
+      isCancelled = true;
+    };
+  }, [location?.state, navigate, user]);
+
   const onSubmit = async (data) => {
   try {
      // Upload image
@@ -42,6 +74,15 @@ const Register = () => {
     console.log("Profile updated!");
   } catch (error) {
     console.error("Registration error:", error);
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'error',
+      title: error.message || 'Registration failed. Please try again.',
+      showConfirmButton: false,
+      timer: 4000,
+      timerProgressBar: true,
+    });
   }
 };
 

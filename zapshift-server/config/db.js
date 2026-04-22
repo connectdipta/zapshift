@@ -1,5 +1,5 @@
 const { MongoClient, ServerApiVersion } = require("mongodb");
-require("dotenv").config(); // ✅ ADD THIS LINE
+require("dotenv").config();
 
 const uri = process.env.MONGODB_URI;
 
@@ -25,9 +25,16 @@ const connectDB = async () => {
     console.log("✅ MongoDB Connected");
   } catch (error) {
     console.error("DB Connection Error:", error);
+    // Re-throw so callers know the connection failed
+    throw error;
   }
 };
 
-const getDB = () => db;
+const getDB = () => {
+  if (!db) {
+    throw new Error("Database not connected. Call connectDB() first.");
+  }
+  return db;
+};
 
 module.exports = { connectDB, getDB };

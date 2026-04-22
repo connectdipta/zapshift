@@ -1,66 +1,39 @@
 # ZapShift Client
 
-Frontend single-page application for ZapShift. Built with React and Vite, this app delivers public pages, authentication, and role-based dashboards for user, admin, and rider operations.
+The ZapShift Client is a high-performance, single-page application (SPA) built with **React** and **Vite**. It provides a premium user interface for customers, administrators, and riders to manage logistics operations with real-time feedback and high-fidelity animations.
 
-## Live URL
+## 🔗 Live Application
+[https://zapshift-partner.vercel.app](https://zapshift-partner.vercel.app)
 
-- https://zapshift-partner.vercel.app
+## ✨ Premium UI/UX Overhaul (April 2026)
+The frontend has been professionalized with enterprise-grade design standards:
+*   **Aesthetic Tokens**: Unified "Midnight Teal" (#103d45) and "Lime Glow" (#caeb66) color palette across all modules.
+*   **Interactive Components**: Custom motion-based tabs in "About Us", real-time cost estimator in "Pricing", and high-contrast onboarding for "Riders".
+*   **Standardized Layout**: Unified container widths (`max-w-7xl`) and rounding (`rounded-[3.5rem]`) for a cohesive "card-based" interface.
+*   **Performance Map**: Interactive Leaflet integration with search-to-map synchronization and custom pulse-effect pins.
 
-## Latest Update (April 2026)
+## 🛠️ Technology Stack
+*   **Core**: React 18, Vite 7, React Router 7.
+*   **Styling**: Tailwind CSS 4, DaisyUI 5, Vanilla CSS for custom tokens.
+*   **Animation**: Framer Motion, Lottie-web, Swiper.js (for review carousels).
+*   **Data Management**: TanStack Query 5 (React Query), Axios (with secure interceptors).
+*   **Maps & Charts**: React Leaflet, Recharts.
+*   **Auth**: Firebase SDK with backend JWT integration.
 
-- Mobile responsiveness was improved across public pages and core landing components.
-- Updated pages include About, Coverage, Send Parcel, Rider, Pricing, Services, Login, Register, and Error page.
-- Updated components include Navbar, Footer, Banner, OurServices, DeliveryFeatures, FAQSection, and Motive.
-- Latest production deployment is live on Vercel:
-  - https://zapshift-partner.vercel.app
+## 📂 Features & Modules
 
-## Stack
+### 🌐 Public Experience
+*   **Dynamic Landing**: Hero banners with Lottie animations and responsive section transitions.
+*   **Advanced Coverage**: Real-time searchable map of nationwide service hubs.
+*   **Smart Pricing**: Instant shipment cost calculation based on parcel attributes.
 
-- React 18
-- Vite 7
-- React Router 7
-- TanStack Query 5
-- Axios
-- Firebase Auth
-- Tailwind CSS 4
-- DaisyUI 5
-- Framer Motion
-- AOS
-- Recharts
-- SweetAlert2
-- Leaflet + React Leaflet
+### 🔐 Secure Dashboards
+*   **User Hub**: Parcel booking, tracking timeline, payment success workflows, and invoice history.
+*   **Admin Console**: Multi-dimensional management of users, riders, shipping batches, and financial reconciliation.
+*   **Rider Portal**: Task-specific view for pickups and deliveries with earning history and GPS-aware coverage.
 
-## Features
-
-### Public Site
-
-- Home, Pricing, About, Coverage, Send Parcel, Be a Rider
-- Responsive navigation with mobile optimization
-- Animated page transitions and scroll reveals
-
-### Authentication
-
-- Email and password login
-- Google sign-in
-- Backend JWT token handshake after Firebase auth
-- Auto-logout based on token expiry
-
-### Dashboard
-
-- User dashboard: parcels, pay, track, invoices, settings
-- Admin dashboard: users, riders, delivery management, payments
-- Rider dashboard: pickups, deliveries, history, earnings
-
-## Route Access Model
-
-- Public pages are accessible directly from navbar.
-- Send Parcel and Rider forms enforce login when submitting.
-- Dashboard routes are protected and role-aware.
-
-## Environment Variables
-
-Create .env in zapshift-client:
-
+## ⚙️ Environment Variables
+Create a `.env` file in the `zapshift-client` directory:
 ```env
 VITE_API_URL=https://zapshift-server-ebon.vercel.app
 VITE_apiKey=your_firebase_api_key
@@ -69,82 +42,19 @@ VITE_projectId=your_firebase_project_id
 VITE_storageBucket=your_firebase_storage_bucket
 VITE_messagingSenderId=your_firebase_messaging_sender_id
 VITE_appId=your_firebase_app_id
-VITE_imgHost=your_image_host_url
 ```
 
-## Important Auth Notes
+## 🚀 Local Development
 
-- Make sure your frontend domain is listed in Firebase authorized domains.
-- Runtime config trims whitespace/newlines from Firebase env values to avoid malformed iframe URLs.
-- Login navigation waits for backend token readiness to reduce dashboard loading loops.
+1.  **Install**: `npm install`
+2.  **Dev Server**: `npm run dev`
+3.  **Build**: `npm run build`
+4.  **Preview**: `npm run preview`
 
-## Local Development
+## 🏗️ Deployment Notes
+*   Hosted on **Vercel** with automated CI/CD.
+*   Production environment variables are securely managed in Vercel project settings.
+*   The application includes a specialized `vercel.json` for SPA routing support.
 
-1. Install dependencies:
-
-```bash
-npm install
-```
-
-2. Start development server:
-
-```bash
-npm run dev
-```
-
-3. Build production bundle:
-
-```bash
-npm run build
-```
-
-4. Preview production bundle:
-
-```bash
-npm run preview
-```
-
-## Scripts
-
-- npm run dev
-- npm run build
-- npm run preview
-- npm run lint
-
-## Deployment
-
-- Hosted on Vercel.
-- Production env vars are configured in Vercel project settings.
-- Frontend points to backend API URL:
-  - https://zapshift-server-ebon.vercel.app
-
-Recommended deploy command:
-
-```bash
-vercel deploy --prod --yes
-```
-
-## Troubleshooting
-
-### Google sign-in popup opens but app hangs on loading
-
-- Confirm backend /jwt endpoint is reachable.
-- Confirm VITE_API_URL is set to the backend you are actually using, locally or in deployment.
-- Confirm Firebase authorized domain includes your Vercel domain.
-
-### Map markers not visible in Coverage page
-
-- Leaflet icon path fix is already integrated for Vite production builds.
-- If markers fail after cache update, hard refresh once.
-
-### Repeated redirects to login
-
-- Check token keys in browser local storage:
-  - zapshift_access_token
-  - zapshift_access_expires_at
-- Verify server JWT secret and CORS configuration.
-
-## Related Docs
-
-- Root docs: [README.md](../README.md)
-- Server docs: [zapshift-server/README.md](../zapshift-server/README.md)
+---
+Developed by **Dipta Acharjee** | [Root README](../README.md)

@@ -1,173 +1,65 @@
 # ZapShift Server
 
-Backend API for ZapShift. Provides authentication token issuance, parcel lifecycle management, delivery workflow orchestration, tracking timeline persistence, rider operations, and payment records.
+The ZapShift Server is a robust Node.js backend built with **Express** and **MongoDB**. It serves as the orchestration layer for the entire ZapShift logistics ecosystem, handling complex parcel lifecycles, real-time tracking updates, secure role-based access, and financial data management.
 
-## Live URL
+## 🔗 Live API
+[https://zapshift-server-ebon.vercel.app](https://zapshift-server-ebon.vercel.app)
 
-- https://zapshift-server-ebon.vercel.app
+## ✨ Technical Features
+*   **Workflow Engine**: Automated state machine for parcel transitions (Pending → In-Transit → Delivered).
+*   **Granular Security**: Multi-tier authentication using Firebase verifyToken and backend-signed JWTs with role-aware middleware.
+*   **Tracking Analytics**: Persistent tracking timeline storage with metadata for every operational touchpoint.
+*   **Scalable Architecture**: Serverless-ready design optimized for Vercel deployment and MongoDB Atlas.
 
-## Latest Update (April 2026)
+## 🛠️ Technology Stack
+*   **Runtime**: Node.js
+*   **Framework**: Express 5
+*   **Database**: MongoDB (Native Driver)
+*   **Security**: jsonwebtoken, Firebase Admin SDK
+*   **Utilities**: dotenv, cors, nodemon
 
-- Backend deployment was refreshed on Vercel production.
-- Active production alias:
-  - https://zapshift-server-ebon.vercel.app
-- Latest deployment URL:
-  - https://zapshift-server-ajdpoez1p-connectdiptas-projects.vercel.app
-- Health check confirmed successful response (HTTP 200).
+## 📂 Project Structure
+*   `api/index.js`: Vercel serverless entry point.
+*   `config/db.js`: MongoDB connection orchestration.
+*   `middleware/`: Specialized auth and role validation guards.
+*   `controllers/`: Core business logic for users, riders, and parcels.
+*   `routes/`: API endpoint definitions with role-based protection.
 
-## Stack
+## 📊 API Endpoints
 
-- Node.js
-- Express 5
-- MongoDB Node Driver
-- jsonwebtoken
-- dotenv
-- cors
-- nodemon
+### 🔐 Authentication
+*   `POST /jwt`: Issue signed access tokens based on Firebase session.
 
-## Architecture
+### 👥 User Management
+*   `POST /users/sync`: Onboard/sync Firebase users to MongoDB.
+*   `GET /users/me`: Fetch detailed role-specific profile data.
+*   `GET /users/riders/list`: Admin view for rider applications and reviews.
+*   `POST /users/rider-request`: Submit professional rider application.
 
-- Express app module: app.js
-- Local runtime entry: index.js
-- Vercel serverless entry: api/index.js
-- DB config: config/db.js
-- Auth middleware: middleware/authMiddleware.js
-- Routes:
-  - routes/userRoutes.js
-  - routes/parcelRoutes.js
-- Controllers:
-  - controllers/userController.js
-  - controllers/parcelController.js
+### 📦 Parcel Operations
+*   `POST /parcels`: Securely book a new shipment with price validation.
+*   `GET /parcels/:id`: Fetch deep parcel details including tracking history.
+*   `PATCH /parcels/:id/workflow`: Transition parcel states (In-Transit, Reached Hub, etc.).
+*   `GET /parcels/admin/stats`: Aggregate logistics data for admin dashboards.
 
-## Data Collections
-
-- users
-- riderApplications
-- parcels
-- tracking
-- payments
-
-Database name: zapshiftDB
-
-## Auth Flow
-
-1. Client authenticates with Firebase.
-2. Client calls POST /jwt with email.
-3. Server signs JWT with role and returns token + expiry.
-4. Protected routes validate bearer token and user role.
-
-## Access Control
-
-- verifyToken: validates bearer token
-- attachUserRole: resolves current role from database
-- verifyRole: guards role-specific endpoints
-
-## API Endpoints
-
-### Health
-
-- GET /
-
-### Token
-
-- POST /jwt
-
-### Users
-
-- POST /users/sync
-- GET /users/me?email=
-- GET /users
-- PATCH /users/:id/role
-- GET /users/riders/list
-- PATCH /users/riders/:id/review
-- DELETE /users/riders/:id
-- POST /users/rider-request
-
-### Parcels
-
-- POST /parcels
-- GET /parcels
-- GET /parcels/:id
-- PATCH /parcels/:id/pay
-- PATCH /parcels/:id/status
-- PATCH /parcels/:id/assign-riders
-- PATCH /parcels/:id/workflow
-- GET /parcels/:id/tracking
-- GET /parcels/track/:query
-- GET /parcels/admin/stats
-- GET /parcels/admin/payments
-
-## Status Lifecycle
-
-1. pending
-2. paid
-3. ready-to-pickup
-4. in-transit
-5. reached-service-center
-6. shipped
-7. ready-for-delivery
-8. delivered
-
-Additional states:
-
-- failed
-- damaged
-
-## Environment Variables
-
-Create .env in zapshift-server:
-
+## ⚙️ Environment Variables
+Create a `.env` file in the `zapshift-server` directory:
 ```env
 PORT=5000
 MONGODB_URI=your_mongodb_connection_string
 JWT_ACCESS_SECRET=your_strong_secret
 ```
 
-## Local Development
+## 🚀 Local Development
 
-1. Install dependencies:
+1.  **Install**: `npm install`
+2.  **Start Server**: `npm start`
+3.  **Dev Mode**: `npm run dev` (with nodemon)
 
-```bash
-npm install
-```
+## 🏗️ Deployment Notes
+*   Deployed on **Vercel Serverless Functions**.
+*   Requires `vercel.json` for mapping API routes to the `api/index.js` entry point.
+*   CORS is configured to allow secure handshakes with the ZapShift Client.
 
-2. Start server:
-
-```bash
-npm run dev
-```
-
-## Scripts
-
-- npm run dev
-- npm start
-
-## Deployment Notes
-
-- Deployed on Vercel serverless.
-- Routing is configured in vercel.json.
-- Ensure MONGODB_URI and JWT_ACCESS_SECRET are set in Vercel environments.
-- Keep CORS restricted in production if needed.
-
-Recommended deploy command:
-
-```bash
-vercel deploy --prod --yes
-```
-
-## Common Issues
-
-### Unauthorized access on protected routes
-
-- Missing or expired bearer token.
-- Token exists but role is not allowed for endpoint.
-
-### Client login succeeds but protected calls fail
-
-- Check deployed frontend VITE_API_URL points here.
-- Confirm /jwt endpoint returns token successfully.
-
-## Related Docs
-
-- Root docs: [README.md](../README.md)
-- Client docs: [zapshift-client/README.md](../zapshift-client/README.md)
+---
+Developed by **Dipta Acharjee** | [Root README](../README.md)

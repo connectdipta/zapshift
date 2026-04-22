@@ -29,20 +29,25 @@ app.post("/jwt", async (req, res) => {
     return res.status(400).send({ message: "Email is required" });
   }
 
-  const dbUser = await getDB().collection("users").findOne({ email: user.email });
-  const role = (dbUser?.role || "user").toLowerCase();
+  try {
+    const dbUser = await getDB().collection("users").findOne({ email: user.email });
+    const role = (dbUser?.role || "user").toLowerCase();
 
-  const expiresInSeconds = 3 * 60 * 60;
-  const token = jwt.sign(
-    { email: user.email, role },
-    process.env.JWT_ACCESS_SECRET || "zapshift-dev-secret",
-    { expiresIn: expiresInSeconds }
-  );
+    const expiresInSeconds = 3 * 60 * 60;
+    const token = jwt.sign(
+      { email: user.email, role },
+      process.env.JWT_ACCESS_SECRET || "zapshift-dev-secret",
+      { expiresIn: expiresInSeconds }
+    );
 
-  res.send({
-    token,
-    expiresAt: new Date(Date.now() + expiresInSeconds * 1000).toISOString(),
-  });
+    res.send({
+      token,
+      expiresAt: new Date(Date.now() + expiresInSeconds * 1000).toISOString(),
+    });
+  } catch (error) {
+    console.error("JWT endpoint error:", error);
+    res.status(500).send({ message: "Failed to generate token" });
+  }
 });
 
 app.use("/parcels", parcelRoutes);

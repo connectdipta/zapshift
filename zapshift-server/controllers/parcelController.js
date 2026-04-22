@@ -376,7 +376,7 @@ exports.updateParcelStatus = async (req, res) => {
         return res.status(400).send({ message: "Tracking number confirmation failed" });
       }
 
-      if (["in-transit", "ready-for-delivery"].includes(targetStatus)) {
+      if (targetStatus === "in-transit") {
         if (!isPickupAssigned) {
           return res.status(403).send({ message: "Only assigned pickup rider can confirm pickup" });
         }
@@ -396,7 +396,7 @@ exports.updateParcelStatus = async (req, res) => {
         }
       }
 
-      if (!["in-transit", "ready-for-delivery", "delivered"].includes(targetStatus)) {
+      if (!["in-transit", "delivered"].includes(targetStatus)) {
         return res.status(403).send({ message: "Rider cannot set this status" });
       }
     }
@@ -406,7 +406,7 @@ exports.updateParcelStatus = async (req, res) => {
       return res.status(404).send({ message: "Parcel not found" });
     }
 
-    if (role === "rider" && ["in-transit", "ready-for-delivery", "delivered"].includes(targetStatus)) {
+    if (role === "rider" && ["in-transit", "delivered"].includes(targetStatus)) {
       await usersCollection().updateOne(
         { email: requesterEmail },
         {

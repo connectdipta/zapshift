@@ -37,7 +37,7 @@ const cardData = [
 
 const HowWorks = () => {
   return (
-    <motion.section className="py-8 sm:py-10 lg:py-12 px-3 sm:px-6 lg:px-8" variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.15 }} transition={{ duration: 0.45 }}>
+    <motion.section className="py-8 sm:py-10 lg:py-12 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto" variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.15 }} transition={{ duration: 0.45 }}>
       <motion.h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-secondary mb-8 text-left" initial={{ opacity: 0, x: -14 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.45 }}>
         How it Works
       </motion.h2>

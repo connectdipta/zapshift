@@ -75,7 +75,7 @@ const DashboardLayout = () => {
           id: `admin-pending-riders-${pendingApplications}`,
           title: "Pending rider applications",
           description: `${pendingApplications} rider request(s) need review`,
-          target: "/dashboard/riders",
+          target: "/dashboard/riders?status=pending",
         });
       }
       if (unpaidCount > 0) {
@@ -83,7 +83,7 @@ const DashboardLayout = () => {
           id: `admin-unpaid-parcels-${unpaidCount}`,
           title: "Unpaid parcels detected",
           description: `${unpaidCount} parcel(s) are unpaid`,
-          target: "/dashboard/payments",
+          target: "/dashboard/delivery?payment=unpaid",
         });
       }
     }
@@ -113,7 +113,7 @@ const DashboardLayout = () => {
           id: `user-delivered-${deliveredCount}`,
           title: "Delivered parcels update",
           description: `${deliveredCount} parcel(s) have been delivered`,
-          target: "/dashboard/user/parcels",
+          target: "/dashboard/user/parcels?status=delivered",
         });
       }
       if (unpaidCount > 0) {
@@ -121,7 +121,7 @@ const DashboardLayout = () => {
           id: `user-unpaid-${unpaidCount}`,
           title: "Pending payments",
           description: `${unpaidCount} parcel(s) are waiting for payment`,
-          target: "/dashboard/user/invoices",
+          target: "/dashboard/user/parcels?payment=unpaid",
         });
       }
     }
@@ -301,7 +301,7 @@ const DashboardLayout = () => {
         </motion.aside>
 
         <div className="flex flex-1 min-h-screen flex-col">
-          <motion.div className="sticky top-0 z-10 border-b border-[#e4e4e4] bg-[#f4f4f4] px-4 py-3 sm:px-6" initial={{ y: -12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.35 }}>
+          <motion.div className="sticky top-0 z-10 border-b border-[#e4e4e4] bg-[#f4f4f4] px-3 py-2 sm:px-6 sm:py-3" initial={{ y: -12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.35 }}>
             <div className="flex items-center justify-between">
               <button
                 onClick={() => {
@@ -311,17 +311,17 @@ const DashboardLayout = () => {
                     setSidebarOpen(true);
                   }
                 }}
-                className="rounded-md p-1 text-gray-600 hover:bg-white"
+                className="rounded-md p-1.5 text-gray-600 hover:bg-white"
                 aria-label="Open sidebar"
               >
-                <MdMenu className="text-lg" />
+                <MdMenu className="text-xl sm:text-lg" />
               </button>
 
-              <div className="flex items-center gap-3 ml-auto">
-                <div className="relative hidden sm:block" ref={notificationRef}>
+              <div className="flex items-center gap-2 sm:gap-3 ml-auto">
+                <div className="relative" ref={notificationRef}>
                   <button
                     onClick={() => setNotificationOpen((prev) => !prev)}
-                    className="relative rounded-full border border-[#e0e0e0] bg-white p-2 text-gray-500"
+                    className="relative rounded-full border border-[#e0e0e0] bg-white p-2 text-gray-500 hover:bg-gray-50 transition-colors"
                   >
                     <MdNotificationsNone className="text-sm" />
                     {unreadCount > 0 ? (
@@ -332,20 +332,20 @@ const DashboardLayout = () => {
                   </button>
 
                   {notificationOpen ? (
-                    <div className="absolute right-0 mt-2 w-80 rounded-lg border border-[#e5e5e5] bg-white p-2 shadow-lg">
+                    <div className="absolute right-0 mt-2 w-72 sm:w-80 rounded-xl border border-[#e5e5e5] bg-white p-2 shadow-xl ring-1 ring-black/5">
                       <div className="mb-2 flex items-center justify-between px-2 py-1">
-                        <p className="text-xs font-semibold text-gray-800">Notifications</p>
+                        <p className="text-xs font-bold text-gray-800">Notifications</p>
                         <button
                           onClick={markAllNotificationsAsRead}
-                          className="text-[11px] font-medium text-[#6f8f24] hover:underline"
+                          className="text-[11px] font-bold text-[#6f8f24] hover:underline"
                         >
                           Mark all read
                         </button>
                       </div>
 
-                      <div className="max-h-72 space-y-1 overflow-auto">
+                      <div className="max-h-72 space-y-1 overflow-auto scrollbar-hide">
                         {notificationItems.length === 0 ? (
-                          <p className="px-2 py-4 text-center text-xs text-gray-500">No notifications available</p>
+                          <p className="px-2 py-6 text-center text-xs text-gray-400">No new notifications</p>
                         ) : (
                           notificationItems.map((item) => {
                             const isRead = seenNotificationIds.includes(item.id);
@@ -353,12 +353,12 @@ const DashboardLayout = () => {
                               <button
                                 key={item.id}
                                 onClick={() => openNotification(item)}
-                                className="flex w-full items-start gap-2 rounded-md px-2 py-2 text-left hover:bg-[#f5f5f5]"
+                                className="flex w-full items-start gap-3 rounded-lg px-2 py-2.5 text-left transition-colors hover:bg-[#f9fafb]"
                               >
-                                <MdCircle className={`mt-1 text-[9px] ${isRead ? "text-transparent" : "text-[#caeb66]"}`} />
-                                <div>
-                                  <p className="text-xs font-semibold text-gray-800">{item.title}</p>
-                                  <p className="text-[11px] text-gray-500">{item.description}</p>
+                                <div className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${isRead ? "bg-transparent" : "bg-[#caeb66]"}`} />
+                                <div className="min-w-0">
+                                  <p className="truncate text-xs font-bold text-gray-800">{item.title}</p>
+                                  <p className="mt-0.5 line-clamp-2 text-[11px] text-gray-500 leading-relaxed">{item.description}</p>
                                 </div>
                               </button>
                             );
@@ -369,35 +369,39 @@ const DashboardLayout = () => {
                   ) : null}
                 </div>
 
-                <div className="relative hidden sm:block" ref={profileRef}>
+                <div className="relative" ref={profileRef}>
                   <button
                     onClick={() => setProfileOpen((prev) => !prev)}
-                    className="flex items-center gap-2 rounded-full border border-[#e0e0e0] bg-white px-2 py-1"
+                    className="flex items-center gap-2 rounded-full border border-[#e0e0e0] bg-white p-1 pr-2 sm:px-2 sm:py-1 hover:bg-gray-50 transition-colors"
                   >
-                    <div className="h-7 w-7 overflow-hidden rounded-full bg-[#dcdcdc]">
+                    <div className="h-7 w-7 shrink-0 overflow-hidden rounded-full bg-[#dcdcdc] ring-1 ring-black/5">
                       {user?.photoURL ? (
                         <img src={user.photoURL} alt="User" className="h-full w-full object-cover" />
                       ) : (
                         <MdAccountCircle className="h-full w-full text-[#8c8c8c]" />
                       )}
                     </div>
-                    <div className="leading-tight text-left">
-                      <p className="text-[11px] font-semibold text-gray-800">{user?.displayName || "User"}</p>
-                      <p className="text-[10px] text-gray-400">{role}</p>
+                    <div className="hidden sm:block leading-tight text-left">
+                      <p className="text-[11px] font-bold text-gray-800">{user?.displayName || "User"}</p>
+                      <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{role}</p>
                     </div>
-                    <MdKeyboardArrowDown className="text-sm text-gray-500" />
+                    <MdKeyboardArrowDown className="text-sm text-gray-400" />
                   </button>
 
                   {profileOpen && (
-                    <div className="absolute right-0 mt-2 w-44 rounded-lg border border-[#e5e5e5] bg-white p-1 shadow-lg">
+                    <div className="absolute right-0 mt-2 w-48 rounded-xl border border-[#e5e5e5] bg-white p-1.5 shadow-xl ring-1 ring-black/5">
+                      <div className="px-3 py-2 sm:hidden border-b border-gray-100 mb-1">
+                        <p className="text-xs font-bold text-gray-800 truncate">{user?.displayName || "User"}</p>
+                        <p className="text-[9px] text-gray-400 uppercase tracking-widest">{role}</p>
+                      </div>
                       <button
                         onClick={() => {
                           navigate("/dashboard");
                           setProfileOpen(false);
                         }}
-                        className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-xs text-gray-700 hover:bg-[#f3f3f3]"
+                        className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"
                       >
-                        <MdDashboard className="text-sm" />
+                        <MdDashboard className="text-base text-gray-400" />
                         Dashboard
                       </button>
                       <button
@@ -405,16 +409,17 @@ const DashboardLayout = () => {
                           navigate("/dashboard/settings");
                           setProfileOpen(false);
                         }}
-                        className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-xs text-gray-700 hover:bg-[#f3f3f3]"
+                        className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"
                       >
-                        <MdSettings className="text-sm" />
+                        <MdSettings className="text-base text-gray-400" />
                         Settings
                       </button>
+                      <div className="my-1 h-px bg-gray-100" />
                       <button
                         onClick={handleLogout}
-                        className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-xs text-red-600 hover:bg-[#fff1f1]"
+                        className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-bold text-red-500 transition-colors hover:bg-red-50"
                       >
-                        <MdLogout className="text-sm" />
+                        <MdLogout className="text-base" />
                         Logout
                       </button>
                     </div>
@@ -424,7 +429,7 @@ const DashboardLayout = () => {
             </div>
           </motion.div>
 
-          <motion.div className="flex-1 p-4 sm:p-6" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05 }}>
+          <motion.div className="flex-1 p-3 sm:p-6" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05 }}>
             <RouteTransition>
               <Outlet />
             </RouteTransition>

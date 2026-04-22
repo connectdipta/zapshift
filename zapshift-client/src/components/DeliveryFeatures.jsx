@@ -31,7 +31,7 @@ const features = [
 const DeliveryFeatures = () => {
   return (
     <motion.section className="bg-gray-50 py-10 sm:py-12 px-4 md:px-8 lg:px-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.5 }}>
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto px-4">
         
         <div className="border-t-2 border-dashed border-gray-300 mb-10"></div>
 

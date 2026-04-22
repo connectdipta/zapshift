@@ -20,8 +20,8 @@ const Testimonials = () => {
                 <motion.h2 className="text-3xl md:text-4xl font-extrabold text-secondary tracking-wide mb-4" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.45, delay: 0.05 }}>
                     What our customers are saying
                 </motion.h2>
-                <motion.p className="mt-2 textarea-md text-tertiary max-w-2xl mx-auto mb-12" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.45, delay: 0.1 }}>
-                    Enhance posture, mobility, and well-being effortlessly with Posture Pro. Achieve proper alignment, reduce pain, and strengthen your body with ease!
+                <motion.p className="mt-2 text-base text-gray-500 max-w-2xl mx-auto mb-12" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.45, delay: 0.1 }}>
+                    Hear from thousands of business owners and individuals who rely on ZapShift for their daily logistics, delivery, and supply chain needs.
                 </motion.p>
 
                 <ReviewCarousel />

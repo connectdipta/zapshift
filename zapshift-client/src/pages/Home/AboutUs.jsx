@@ -1,387 +1,221 @@
 import React, { useState } from 'react'
-import { ChevronDown, Rocket, Globe, Zap, BookOpen, Target, Star, Gem, Lock, DollarSign, Phone, Handshake, Users, Sprout, Lightbulb, Trophy } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { 
+  MdRocketLaunch, MdPublic, MdFlashOn, MdMenuBook, MdTrackChanges, MdStar, MdDiamond, MdLock, 
+  MdAttachMoney, MdPhone, MdGroups, MdSpa, MdLightbulb, MdEmojiEvents,
+  MdArrowForward, MdKeyboardArrowRight, MdOutlineVerified, MdSecurity, MdSpeed
+} from 'react-icons/md'
+import { useNavigate } from 'react-router'
 
-export default function AboutUs() {
+const AboutUs = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('story')
-  const [activeFAQ, setActiveFAQ] = useState(null)
 
   const tabs = [
-    { id: 'story', label: 'Story', icon: BookOpen },
-    { id: 'mission', label: 'Mission', icon: Target },
-    { id: 'vision', label: 'Vision', icon: Star },
-    { id: 'values', label: 'Core Values', icon: Gem }
+    { id: 'story', label: 'Our Story', icon: MdMenuBook, color: 'text-blue-500' },
+    { id: 'mission', label: 'Mission', icon: MdTrackChanges, color: 'text-red-500' },
+    { id: 'vision', label: 'Vision', icon: MdStar, color: 'text-amber-500' },
+    { id: 'values', label: 'Values', icon: MdDiamond, color: 'text-purple-500' }
   ]
 
-  const content = {
-    story: `ZapShift was born from a simple frustration — watching businesses and individuals struggle with unreliable delivery services. We realized that parcels don't just need to arrive; they need to arrive on time, safely, and with complete transparency.
-
-Since our inception, we've revolutionized the delivery landscape across Bangladesh. Our commitment to innovation, real-time tracking, and customer-centric service has made us the preferred choice for thousands of businesses and individual customers.
-
-Today, ZapShift operates across all 64 districts of Bangladesh with a network of 500+ dedicated riders, 50+ service centers, and cutting-edge logistics technology. We're not just moving parcels — we're building trust, one delivery at a time.`,
-    
-    mission: `To revolutionize parcel delivery through innovation, reliability, and customer excellence. We are committed to:
-
-• Providing fast, transparent, and affordable delivery services to every corner of Bangladesh
-• Empowering riders with fair compensation and growth opportunities
-• Leveraging technology to create a seamless delivery experience
-• Maintaining the highest standards of service quality and safety
-• Building lasting relationships with our customers and partners`,
-    
-    vision: `To become Asia's most trusted and innovative last-mile delivery platform, transforming how parcels, packages, and goods move across borders and communities. We envision a future where:
-
-• Every parcel reaches its destination on time, every time
-• Communities are connected through reliable, affordable delivery
-• Riders have sustainable income and career growth
-• Technology enables transparency and trust at every step
-• Sustainability and social responsibility guide our operations`,
-
-    values: `Trust & Transparency: We operate with complete honesty in every interaction
-
-Speed & Reliability: Delivering excellence on every journey
-
-People First: Our riders, customers, and team are our greatest asset
-
-Sustainability: Responsible operations that care for our environment
-
-Innovation: Continuous improvement through technology
-
-Excellence: We never settle for less than the best`
+  const tabContent = {
+    story: {
+      title: "Born to Revolutionize",
+      text: "ZapShift emerged from a singular vision: to bridge the gap between traditional logistics and the digital-first economy. Starting as a small fleet in Dhaka, we realized that parcel delivery isn't just about moving boxes—it's about connecting businesses to their dreams and families to their loved ones with absolute transparency.",
+      stats: ["Est. 2021", "12M+ Parcels", "99% Success"]
+    },
+    mission: {
+      title: "Efficiency Without Compromise",
+      text: "Our mission is to democratize high-speed logistics. We empower small businesses by providing them with the same technological backbone as global giants, while ensuring our rider fleet enjoys fair compensation, safe working conditions, and professional growth opportunities.",
+      stats: ["Zero Hidden Costs", "Fair Wages", "Digital First"]
+    },
+    vision: {
+      title: "The Future of Last-Mile",
+      text: "We envision a South Asia where distance is no longer a barrier to commerce. By integrating AI-driven routing and sustainable electric fleets, we aim to become the most carbon-efficient logistics network in the region by 2030.",
+      stats: ["Asia-Wide Network", "Zero Emission Goal", "AI Driven"]
+    },
+    values: {
+      title: "The ZapShift DNA",
+      text: "Trust, Speed, and Radical Transparency. These aren't just words on a wall; they are the principles that guide every pickup and every handshake. We believe in taking ownership of every shipment, treating every parcel as if it were our own.",
+      stats: ["Human-Centric", "Security First", "Relentless Care"]
+    }
   }
 
-  const keyFeatures = [
-    {
-      icon: Rocket,
-      title: 'Real-Time Tracking',
-      description: 'Track your parcel every step of the journey with live GPS updates and status notifications'
-    },
-    {
-      icon: Zap,
-      title: 'Fast Delivery',
-      description: 'Same-day and next-day delivery options available in major cities across Bangladesh'
-    },
-    {
-      icon: Lock,
-      title: 'Secure Handling',
-      description: 'OTP verification and digital proof of delivery ensure your parcel is in safe hands'
-    },
-    {
-      icon: DollarSign,
-      title: 'Transparent Pricing',
-      description: 'No hidden charges. Clear, upfront pricing based on weight, distance, and parcel type'
-    },
-    {
-      icon: Phone,
-      title: '24/7 Support',
-      description: 'Round-the-clock customer support via chat, phone, and email for any concerns'
-    },
-    {
-      icon: Globe,
-      title: 'National Coverage',
-      description: 'Serving all 64 districts with reliable delivery networks and local expertise'
-    }
-  ]
-
-  const pricingPlans = [
-    {
-      type: 'Document',
-      weight: 'Any Weight',
-      withinCity: '৳60',
-      outsideCity: '৳80'
-    },
-    {
-      type: 'Non-Document',
-      weight: 'Up to 3kg',
-      withinCity: '৳110',
-      outsideCity: '৳150'
-    },
-    {
-      type: 'Non-Document',
-      weight: '>3kg',
-      withinCity: '৳150+',
-      outsideCity: '৳190+'
-    }
-  ]
-
-  const faqItems = [
-    {
-      id: 1,
-      question: 'How long does delivery typically take?',
-      answer: 'Within the same city: 24-48 hours. Outside city/district: 3-5 business days depending on distance and logistics. We provide estimated delivery dates at booking.'
-    },
-    {
-      id: 2,
-      question: 'What payment methods do you accept?',
-      answer: 'We accept all major credit/debit cards for online payments. You can also pay cash on delivery in select areas. Payment is processed securely through our encrypted gateway.'
-    },
-    {
-      id: 3,
-      question: 'What if my parcel is damaged or lost?',
-      answer: 'We offer comprehensive parcel insurance. If any damage or loss occurs, report it within 48 hours with photo evidence. We handle claims within 7 business days.'
-    },
-    {
-      id: 4,
-      question: 'Can I track my parcel in real-time?',
-      answer: 'Yes! Every parcel gets a unique tracking number. You can track its journey through our app or website with live GPS updates and status changes.'
-    },
-    {
-      id: 5,
-      question: 'Do you deliver to all areas of Bangladesh?',
-      answer: 'Yes, we operate across all 64 districts. However, delivery times may vary based on location remoteness. Some areas may have extended delivery times.'
-    },
-    {
-      id: 6,
-      question: 'How do I become a delivery rider?',
-      answer: 'Visit our "Become a Rider" page and submit your application. After verification, you\'ll receive training and can start earning immediately. We offer ৳20 per successful delivery.'
-    }
-  ]
-
-  const workflow = [
-    {
-      step: 1,
-      title: 'Book Your Parcel',
-      description: 'Enter parcel details, weight, pickup and delivery locations through our app or website'
-    },
-    {
-      step: 2,
-      title: 'Make Payment',
-      description: 'Pay the calculated charge securely. Get your unique tracking number instantly'
-    },
-    {
-      step: 3,
-      title: 'Pickup Confirmation',
-      description: 'Our rider arrives at your location, verifies the parcel, and marks it as picked up'
-    },
-    {
-      step: 4,
-      title: 'In Transit',
-      description: 'Parcel moves through our network. Track real-time status and location updates'
-    },
-    {
-      step: 5,
-      title: 'Out for Delivery',
-      description: 'Parcel reaches the destination service center and is assigned to delivery rider'
-    },
-    {
-      step: 6,
-      title: 'Delivered',
-      description: 'Rider delivers with OTP verification. Proof of delivery is shared immediately'
-    }
+  const features = [
+    { icon: MdSpeed, title: 'Hyper-Local Speed', desc: 'Predictive routing ensures your parcels spend less time in transit and more time in customers\' hands.' },
+    { icon: MdSecurity, title: 'Military-Grade Safety', desc: 'Real-time GPS monitoring and multi-step OTP verification keep every shipment secure.' },
+    { icon: MdPublic, title: 'Universal Reach', desc: 'From urban skyscrapers to remote rural villages, our network spans the entire geography.' },
+    { icon: MdOutlineVerified, title: 'Digital Proofing', desc: 'Instant photo confirmation and digital signatures for every successful delivery.' }
   ]
 
   return (
-    <div className="mx-auto bg-white rounded-3xl p-4 sm:p-6 lg:p-10 pt-2 shadow-2xl mt-4 sm:mt-6 mb-4 sm:mb-6">
-      {/* Hero Section */}
-      <div className="relative rounded mt-3 overflow-hidden pt-8 sm:pt-12 pb-14 sm:pb-20 px-4 sm:px-6 md:px-12" style={{ backgroundColor: 'var(--color-secondary)' }}>
-        <div className="max-w-5xl mx-auto ">
-          <div className="text-center text-white">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">About ZapShift</h1>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-light mb-6 sm:mb-8" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
-              Transforming parcel delivery across Bangladesh with speed, reliability, and innovation
-            </p>
-            <div className="flex flex-wrap justify-center gap-3 sm:gap-4 text-xs sm:text-sm md:text-base">
-              <span className="px-4 sm:px-6 py-2 rounded-full flex items-center gap-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', color: 'white' }}>
-                <Users size={16} /> 500+ Active Riders
-              </span>
-              <span className="px-4 sm:px-6 py-2 rounded-full flex items-center gap-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', color: 'white' }}>
-                <Globe size={16} /> 64 Districts Covered
-              </span>
-              <span className="px-4 sm:px-6 py-2 rounded-full flex items-center gap-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', color: 'white' }}>
-                <Zap size={16} /> 5000+ Deliveries
-              </span>
-            </div>
-          </div>
+    <div className="min-h-screen bg-[#fcfdf2] selection:bg-[#103d45] selection:text-white">
+      {/* Premium Hero Section */}
+      <section className="relative pt-24 pb-32 lg:pt-32 lg:pb-52 overflow-hidden bg-[#103d45]">
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-lime-400/5 rounded-full -mr-96 -mt-96 blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full -ml-48 -mb-48 blur-3xl" />
+        
+        <div className="container mx-auto px-6 relative z-10 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 rounded-full bg-lime-400/10 px-6 py-2 text-[11px] font-black uppercase tracking-[0.3em] text-lime-400 mb-10 border border-lime-400/20"
+          >
+            <MdRocketLaunch className="text-lg" /> Defining Modern Logistics
+          </motion.div>
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-5xl lg:text-8xl font-black text-white tracking-tight leading-[0.9] mb-8"
+          >
+            We're building the <br/> <span className="text-[#caeb66]">next-gen network.</span>
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mx-auto max-w-2xl text-lg sm:text-xl text-white/50 font-medium leading-relaxed"
+          >
+            ZapShift is more than a delivery company. We are a technology-driven infrastructure provider 
+            transforming commerce across Bangladesh.
+          </motion.p>
         </div>
-      </div>
+      </section>
 
-      {/* Main Content Wrapper */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        {/* Story Section with Tabs */}
-        <div className="py-10 sm:py-16">
-          <div className="mb-10">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Journey</h2>
-            <p className="text-gray-600">Learn about our mission, vision, and the values that drive us</p>
-          </div>
-
-          {/* Tab Navigation */}
-          <div className="flex flex-wrap gap-3 mb-10 border-b-2 pb-6" style={{ borderColor: 'var(--color-primary)' }}>
-            {tabs.map((tab) => {
-              const IconComponent = tab.icon
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`px-6 py-3 font-semibold rounded-lg transition-all duration-300 flex items-center gap-2 ${
-                    activeTab === tab.id
-                      ? 'text-white shadow-lg'
-                      : 'text-gray-600 hover:bg-gray-100'
-                  }`}
-                  style={{
-                    backgroundColor: activeTab === tab.id ? 'var(--color-secondary)' : 'transparent',
-                    color: activeTab === tab.id ? 'white' : 'inherit'
-                  }}
-                >
-                  <IconComponent size={18} />
-                  {tab.label}
-                </button>
-              )
-            })}
-          </div>
-
-          {/* Tab Content */}
-          <div className="bg-white p-5 sm:p-8 rounded-2xl shadow-lg border border-gray-100">
-            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base sm:text-lg">
-              {content[activeTab]}
-            </p>
-          </div>
-        </div>
-
-        {/* Stats Section */}
-        <div className="py-10 sm:py-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-8 sm:mb-12 text-center">By The Numbers</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            <div className="text-white p-6 sm:p-8 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow" style={{ backgroundColor: 'var(--color-secondary)' }}>
-              <div className="text-3xl sm:text-4xl font-bold mb-2">5000+</div>
-              <p className="font-semibold">Deliveries Completed</p>
-              <p className="text-sm mt-2" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>And counting</p>
-            </div>
-            <div className="text-white p-6 sm:p-8 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow" style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-secondary)' }}>
-              <div className="text-3xl sm:text-4xl font-bold mb-2">99%</div>
-              <p className="font-semibold">On-Time Delivery</p>
-              <p className="text-sm mt-2" style={{ color: 'var(--color-secondary)', opacity: 0.7 }}>Reliability guaranteed</p>
-            </div>
-            <div className="text-white p-6 sm:p-8 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow" style={{ backgroundColor: 'var(--color-secondary)' }}>
-              <div className="text-3xl sm:text-4xl font-bold mb-2">500+</div>
-              <p className="font-semibold">Active Riders</p>
-              <p className="text-sm mt-2" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Professional partners</p>
-            </div>
-            <div className="text-white p-6 sm:p-8 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow" style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-secondary)' }}>
-              <div className="text-3xl sm:text-4xl font-bold mb-2">64</div>
-              <p className="font-semibold">Districts Served</p>
-              <p className="text-sm mt-2" style={{ color: 'var(--color-secondary)', opacity: 0.7 }}>Nationwide coverage</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Key Features */}
-        <div className="py-10 sm:py-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-8 sm:mb-12 text-center">Why Choose ZapShift?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
-            {keyFeatures.map((feature, idx) => {
-              const IconComponent = feature.icon
-              return (
-                <div key={idx} className="bg-white p-6 sm:p-8 rounded-2xl shadow-md hover:shadow-xl transition-shadow border border-gray-100" style={{ borderColor: 'var(--color-primary)' }}>
-                  <IconComponent size={48} style={{ color: 'var(--color-secondary)', marginBottom: '1rem' }} />
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* Delivery Workflow */}
-        <div className="py-10 sm:py-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-8 sm:mb-12 text-center">How ZapShift Works</h2>
-          <div className="relative">
-            <div className="hidden md:block absolute top-12 left-0 right-0 h-1" style={{ backgroundColor: 'var(--color-primary)' }}></div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 sm:gap-6">
-              {workflow.map((item, idx) => (
-                <div key={idx} className="relative">
-                  <div className="bg-white rounded-full w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-lg border-4 z-10 relative" style={{ borderColor: 'var(--color-secondary)' }}>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold" style={{ color: 'var(--color-secondary)' }}>{item.step}</div>
+      {/* Narrative Section */}
+      <section className="max-w-7xl mx-auto px-6 -mt-24 lg:-mt-32 relative z-20">
+        <div className="bg-white rounded-[3.5rem] shadow-2xl shadow-black/10 overflow-hidden lg:flex">
+          <div className="lg:w-1/3 bg-gray-50/80 p-8 lg:p-16 border-r border-gray-100">
+             <div className="space-y-2 mb-12">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`w-full flex items-center justify-between p-5 rounded-3xl transition-all duration-500 group ${activeTab === tab.id ? 'bg-[#103d45] text-white shadow-xl shadow-[#103d45]/20' : 'hover:bg-white text-gray-400'}`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <tab.icon className={`text-xl ${activeTab === tab.id ? 'text-[#caeb66]' : tab.color}`} />
+                      <span className="text-sm font-black uppercase tracking-widest">{tab.label}</span>
                     </div>
+                    <MdKeyboardArrowRight className={`text-2xl transition-transform ${activeTab === tab.id ? 'translate-x-0' : '-translate-x-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0'}`} />
+                  </button>
+                ))}
+             </div>
+
+             <div className="p-8 rounded-[2.5rem] bg-[#caeb66] text-[#103d45]">
+                <p className="text-xs font-black uppercase tracking-[0.2em] mb-4 opacity-60">Global Recognition</p>
+                <MdEmojiEvents className="text-4xl mb-6" />
+                <h4 className="text-xl font-black leading-tight mb-2">Logistics Innovation Award 2024</h4>
+                <p className="text-xs font-bold opacity-70">Awarded for revolutionary last-mile tracking infrastructure.</p>
+             </div>
+          </div>
+
+          <div className="lg:w-2/3 p-10 lg:p-24 bg-white relative">
+             <AnimatePresence mode="wait">
+               <motion.div
+                 key={activeTab}
+                 initial={{ opacity: 0, x: 20 }}
+                 animate={{ opacity: 1, x: 0 }}
+                 exit={{ opacity: 0, x: -20 }}
+                 transition={{ duration: 0.4 }}
+               >
+                  <h2 className="text-4xl lg:text-6xl font-black text-[#103d45] mb-8 leading-tight">{tabContent[activeTab].title}</h2>
+                  <p className="text-lg lg:text-xl text-gray-500 font-medium leading-relaxed mb-12">
+                    {tabContent[activeTab].text}
+                  </p>
+                  
+                  <div className="grid grid-cols-3 gap-6 pt-12 border-t border-gray-100">
+                     {tabContent[activeTab].stats.map((s, i) => (
+                       <div key={i}>
+                          <p className="text-2xl font-black text-[#103d45]">{s}</p>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">Milestone Indicator</p>
+                       </div>
+                     ))}
                   </div>
-                  <div className="bg-white p-5 sm:p-6 rounded-2xl shadow-md border border-gray-100">
-                    <h3 className="font-bold text-gray-900 mb-2 text-center">{item.title}</h3>
-                    <p className="text-sm text-gray-600 text-center">{item.description}</p>
-                  </div>
+               </motion.div>
+             </AnimatePresence>
+          </div>
+        </div>
+      </section>
+
+      {/* Feature Grid */}
+      <section className="py-32 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-20">
+             <h2 className="text-4xl lg:text-6xl font-black text-[#103d45] tracking-tight mb-6">Built for scale, <br/> <span className="text-gray-400">delivered with care.</span></h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((f, i) => (
+              <motion.div 
+                key={i}
+                whileHover={{ y: -10 }}
+                className="p-10 rounded-[3rem] bg-gray-50 border border-transparent hover:border-[#caeb66] hover:bg-white hover:shadow-2xl transition-all"
+              >
+                <div className="h-16 w-16 rounded-2xl bg-[#103d45] text-[#caeb66] flex items-center justify-center mb-8 shadow-xl shadow-[#103d45]/10">
+                   <f.icon className="text-3xl" />
+                </div>
+                <h3 className="text-2xl font-black text-[#103d45] mb-4">{f.title}</h3>
+                <p className="text-sm text-gray-500 font-medium leading-relaxed">{f.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Statistics Section */}
+      <section className="bg-[#103d45] py-32 overflow-hidden relative">
+        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] border-[40px] border-[#caeb66] rounded-full opacity-5" />
+        </div>
+        
+        <div className="container mx-auto px-6 relative z-10 text-center">
+           <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-6">
+              {[
+                { val: "64/64", label: "Districts Coverage" },
+                { val: "1.2M", label: "Monthly Shipments" },
+                { val: "500+", label: "Professional Hubs" },
+                { val: "24/7", label: "Operation Uptime" }
+              ].map((s, i) => (
+                <div key={i}>
+                   <p className="text-5xl lg:text-7xl font-black text-[#caeb66] mb-2">{s.val}</p>
+                   <p className="text-xs font-black uppercase tracking-[0.3em] text-white/40">{s.label}</p>
                 </div>
               ))}
+           </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-32 bg-white">
+         <div className="max-w-7xl mx-auto px-6">
+            <div className="max-w-6xl mx-auto rounded-[4rem] bg-gradient-to-br from-[#caeb66] to-[#b8d94a] p-10 lg:p-24 lg:flex items-center justify-between shadow-2xl shadow-lime-200">
+               <div className="lg:max-w-xl">
+                  <h3 className="text-4xl lg:text-6xl font-black text-[#103d45] mb-8 leading-tight">Ready to shift <br/> your logistics?</h3>
+                  <p className="text-lg text-[#103d45]/60 font-bold mb-12">
+                    Join over 5,000 corporate partners who rely on ZapShift for their daily delivery requirements.
+                  </p>
+                  <div className="flex flex-wrap gap-4">
+                     <button onClick={() => navigate('/send-parcel')} className="px-10 py-5 bg-[#103d45] text-white rounded-[2rem] font-black text-sm hover:scale-105 active:scale-95 transition-all shadow-2xl">
+                        Send Parcel Now
+                     </button>
+                     <button onClick={() => navigate('/rider')} className="px-10 py-5 bg-white/50 text-[#103d45] rounded-[2rem] font-black text-sm hover:bg-white transition-all">
+                        Become a Partner
+                     </button>
+                  </div>
+               </div>
+               
+               <div className="hidden lg:block">
+                  <div className="h-96 w-96 rounded-[5rem] bg-[#103d45] flex items-center justify-center shadow-2xl rotate-6">
+                     <MdRocketLaunch className="text-white text-9xl -rotate-45" />
+                  </div>
+               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Pricing Section */}
-        <div className="py-10 sm:py-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center">Transparent Pricing</h2>
-          <p className="text-gray-600 text-center mb-8 sm:mb-12 max-w-2xl mx-auto">No hidden charges. Clear, straightforward pricing based on your parcel type, weight, and delivery distance.</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
-            {pricingPlans.map((plan, idx) => (
-              <div key={idx} className="p-6 sm:p-8 rounded-2xl border border-gray-200 hover:shadow-lg transition-shadow" style={{ backgroundColor: idx === 1 ? 'var(--color-primary)' : '#f8f9fa', color: idx === 1 ? 'var(--color-secondary)' : 'inherit' }}>
-                <h3 className="text-xl font-bold mb-4" style={{ color: idx === 1 ? 'var(--color-secondary)' : 'var(--color-secondary)' }}>{plan.type}</h3>
-                <div className="space-y-4 mb-6">
-                  <div>
-                    <p className="text-sm mb-1" style={{ color: idx === 1 ? 'var(--color-secondary)' : 'var(--color-secondary)', opacity: 0.7 }}>Weight</p>
-                    <p className="font-semibold" style={{ color: idx === 1 ? 'var(--color-secondary)' : 'var(--color-secondary)' }}>{plan.weight}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm mb-1" style={{ color: idx === 1 ? 'var(--color-secondary)' : 'var(--color-secondary)', opacity: 0.7 }}>Within City</p>
-                    <p className="text-2xl font-bold" style={{ color: idx === 1 ? 'var(--color-secondary)' : 'var(--color-secondary)' }}>{plan.withinCity}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm mb-1" style={{ color: idx === 1 ? 'var(--color-secondary)' : 'var(--color-secondary)', opacity: 0.7 }}>Outside City</p>
-                    <p className="text-2xl font-bold" style={{ color: idx === 1 ? 'var(--color-secondary)' : 'var(--color-secondary)' }}>{plan.outsideCity}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* FAQ Section */}
-        <div className="py-10 sm:py-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-8 sm:mb-12 text-center">Frequently Asked Questions</h2>
-          <div className="max-w-3xl mx-auto space-y-4">
-            {faqItems.map((item) => (
-              <div key={item.id} className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-shadow">
-                <button
-                  onClick={() => setActiveFAQ(activeFAQ === item.id ? null : item.id)}
-                  className="w-full flex items-center justify-between p-6 hover:bg-gray-50 transition-colors"
-                >
-                  <span className="font-semibold text-gray-900 text-left">{item.question}</span>
-                  <ChevronDown
-                    size={20}
-                    className={`flex-shrink-0 transition-transform`}
-                    style={{ color: 'var(--color-secondary)', transform: activeFAQ === item.id ? 'rotate(180deg)' : 'rotate(0deg)' }}
-                  />
-                </button>
-                {activeFAQ === item.id && (
-                  <div className="px-6 pb-6 pt-2 border-t border-gray-100 text-gray-600 leading-relaxed">
-                    {item.answer}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* CTA Section */}
-        <div className="py-10 sm:py-16">
-          <div className="rounded-3xl p-6 sm:p-8 lg:p-12 text-center text-white" style={{ backgroundColor: 'var(--color-secondary)' }}>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Ready to Experience ZapShift?</h2>
-            <p className="text-base sm:text-lg mb-6 sm:mb-8 max-w-2xl mx-auto" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
-              Join thousands of satisfied customers who trust ZapShift for fast, reliable, and transparent parcel delivery across Bangladesh.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                className="px-6 sm:px-8 py-3 text-white font-bold rounded-lg hover:opacity-90 transition-opacity"
-                style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-secondary)' }}
-              >
-                Send a Parcel Now
-              </button>
-              <button
-                className="px-6 sm:px-8 py-3 border-2 text-white font-bold rounded-lg transition-colors hover:text-white"
-                style={{ borderColor: 'var(--color-primary)', color: 'white' }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(202, 235, 102, 0.1)'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
-              >
-                Become a Rider
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+         </div>
+      </section>
     </div>
   )
 }
+
+export default AboutUs

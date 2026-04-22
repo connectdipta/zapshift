@@ -18,7 +18,7 @@ const logos = [
 
 const ClientLogos = () => (
   <section className="bg-gray-100 pt-8 pb-12 my-4">
-    <div className="max-w-6xl mx-auto text-center mb-8">
+    <div className="max-w-7xl mx-auto text-center mb-8 px-4">
       <h2 className="text-2xl font-extrabold text-secondary">
         We've helped thousands of sales teams
       </h2>

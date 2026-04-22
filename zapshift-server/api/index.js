@@ -5,7 +5,11 @@ let connectionPromise;
 
 module.exports = async (req, res) => {
   if (!connectionPromise) {
-    connectionPromise = connectDB();
+    connectionPromise = connectDB().catch((err) => {
+      // Reset so the next request retries instead of being permanently broken
+      connectionPromise = null;
+      throw err;
+    });
   }
 
   await connectionPromise;

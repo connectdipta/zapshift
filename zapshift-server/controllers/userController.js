@@ -159,7 +159,7 @@ exports.deleteRider = async (req, res) => {
       {
         $set: {
           riderStatus: "none",
-          role: application.applicationStatus === "approved" ? "user" : "user",
+          role: "user",
           updatedAt: new Date(),
         },
       }

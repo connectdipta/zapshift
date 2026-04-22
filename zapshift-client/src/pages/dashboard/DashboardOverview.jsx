@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -6,11 +6,12 @@ import {
   MdMoreVert,
   MdKeyboardArrowDown,
   MdFilterList,
-  MdEdit,
   MdArrowForward,
   MdArrowBack,
   MdInfoOutline,
   MdAdd,
+  MdVisibility,
+  MdSettings,
 } from "react-icons/md";
 import {
   LineChart,
@@ -51,66 +52,56 @@ const DashboardOverview = () => {
   });
 
   const rowsPerPage = 6;
-  const [currentPage, setCurrentPage] = React.useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const shippingRows = parcels
-    .slice()
-    .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
-    .map((p) => ({
-      id: `#${String(p._id || "").slice(-6).toUpperCase()}`,
-      client: p.senderName || p.senderEmail || "N/A",
-      date: new Date(p.createdAt || Date.now()).toLocaleDateString(),
-      weight: `${Number(p.parcelWeight) || 0} kg`,
-      shipper: p.parcelType === "document" ? "Document" : "Parcel",
-      price: `${(Number(p.amount) || 0).toFixed(2)}`,
-      status: String(p.status || "pending").toLowerCase(),
-      parcelId: p._id,
-    }));
+  const shippingRows = useMemo(() => {
+    return parcels
+      .slice()
+      .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+      .map((p) => ({
+        id: `#${String(p._id || "").slice(-6).toUpperCase()}`,
+        client: p.senderName || p.senderEmail || "N/A",
+        date: new Date(p.createdAt || Date.now()).toLocaleDateString(),
+        weight: `${Number(p.parcelWeight) || 0} kg`,
+        shipper: p.parcelType === "document" ? "Document" : "Parcel",
+        price: `${(Number(p.amount) || 0).toFixed(2)}`,
+        status: String(p.status || "pending").toLowerCase(),
+        parcelId: p._id,
+      }));
+  }, [parcels]);
 
   const totalPages = Math.max(1, Math.ceil(shippingRows.length / rowsPerPage));
-  const paginatedRows = React.useMemo(() => {
+  const paginatedRows = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
     return shippingRows.slice(start, start + rowsPerPage);
   }, [shippingRows, currentPage]);
 
   const statusColor = {
-    delivered: "bg-[#dff7e9] text-[#2d8f55]",
-    "in-transit": "bg-[#e8edff] text-[#4368e8]",
-    waiting: "bg-[#ffe6e6] text-[#e36363]",
-    pending: "bg-[#fff2db] text-[#d18b23]",
-    processing: "bg-[#e8edff] text-[#4368e8]",
-    "ready-to-pickup": "bg-[#fff2db] text-[#d18b23]",
-    paid: "bg-[#ecf3ff] text-[#2f65d8]",
-    shipped: "bg-[#eaf3ff] text-[#3063cc]",
-    failed: "bg-[#ffe6e6] text-[#d45d5d]",
-    damaged: "bg-[#ffe8df] text-[#d96f3f]",
+    delivered: "bg-green-100 text-green-700",
+    "in-transit": "bg-blue-100 text-blue-700",
+    waiting: "bg-red-100 text-red-700",
+    pending: "bg-gray-100 text-gray-700",
+    processing: "bg-indigo-100 text-indigo-700",
+    "ready-to-pickup": "bg-amber-100 text-amber-700",
+    paid: "bg-emerald-100 text-emerald-700",
+    shipped: "bg-cyan-100 text-cyan-700",
+    failed: "bg-rose-100 text-rose-700",
+    damaged: "bg-orange-100 text-orange-700",
   };
 
-  const totals = statsData?.totals || {
-    newPackages: 0,
-    readyForShipping: 0,
-    completed: 0,
-    newClients: 0,
-  };
-
+  const totals = statsData?.totals || { newPackages: 0, readyForShipping: 0, completed: 0, newClients: 0 };
   const stats = [
-    { title: "New Packages", value: totals.newPackages.toLocaleString() },
-    { title: "Ready for Shipping", value: totals.readyForShipping.toLocaleString() },
-    { title: "Completed", value: totals.completed.toLocaleString() },
-    { title: "New Clients", value: totals.newClients.toLocaleString() },
+    { title: "New Packages", value: totals.newPackages, color: "text-blue-600" },
+    { title: "Ready for Shipping", value: totals.readyForShipping, color: "text-amber-600" },
+    { title: "Completed", value: totals.completed, color: "text-green-600" },
+    { title: "New Clients", value: totals.newClients, color: "text-purple-600" },
   ];
 
-  const lateInvoices = parcels.filter((p) => String(p.paymentStatus || "unpaid").toLowerCase() !== "paid").slice(0, 6);
-
   const alerts = statsData?.alerts || { delayed: 0, failed: 0, damaged: 0 };
-  const chartData = React.useMemo(() => {
+  const chartData = useMemo(() => {
     const source = Array.isArray(statsData?.chart) ? statsData.chart : [];
     const fallbackDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-    if (!source.length) {
-      return fallbackDays.map((day) => ({ day, parcels: 0, income: 0 }));
-    }
-
+    if (!source.length) return fallbackDays.map((day) => ({ day, parcels: 0, income: 0 }));
     return source.map((item) => ({
       day: item?.day || "",
       parcels: Number(item?.parcels) || 0,
@@ -119,250 +110,154 @@ const DashboardOverview = () => {
   }, [statsData?.chart]);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-start justify-between gap-3">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-[#1f1f1f]">Dashboard Overview</h1>
-          <p className="text-[11px] text-gray-500">You can access all your data and information from anywhere.</p>
+          <h1 className="text-2xl font-extrabold text-[#103d45]">Admin Overview</h1>
+          <p className="text-xs text-gray-500">Monitor system-wide parcel delivery performance.</p>
         </div>
         <button
           onClick={() => navigate("/dashboard/send-parcel")}
-          className="inline-flex items-center gap-1 rounded-lg bg-[#caeb66] px-3 py-2 text-xs font-semibold text-[#111] hover:bg-[#bedd5f]"
+          className="inline-flex w-fit items-center gap-2 rounded-xl bg-[#caeb66] px-5 py-3 text-sm font-bold text-[#1c2d1a] transition hover:brightness-95 active:scale-95"
         >
-          <MdAdd className="text-sm" />
+          <MdAdd className="text-lg" />
           Create Shipment
         </button>
       </div>
 
-      <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      {/* Stats Grid */}
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {stats.map((item) => (
-          <div key={item.title} className="rounded-xl border border-[#e8e8e8] bg-[#f8f8f8] p-3">
-            <div className="mb-1 flex items-center gap-2 text-[11px] text-gray-500">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full border border-[#dddddd]">
-                <MdLocalShipping className="text-[12px]" />
+          <div key={item.title} className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition hover:shadow-md">
+            <div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-gray-50 text-gray-400">
+                <MdLocalShipping className="text-sm" />
               </span>
               {item.title}
             </div>
-            <p className="pl-7 text-[30px] font-semibold leading-none text-[#1f1f1f]">{statsLoading ? "..." : item.value}</p>
+            <p className={`text-2xl font-black ${item.color || "text-[#103d45]"}`}>{statsLoading ? "..." : item.value.toLocaleString()}</p>
           </div>
         ))}
       </section>
 
-      <section className="rounded-xl border border-[#e4e4e4] bg-[#f7f7f7] p-3 sm:p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-[#262626]">Shipment Statistics</h2>
+      <div className="grid gap-6 xl:grid-cols-3">
+        {/* Chart Section */}
+        <section className="xl:col-span-2 rounded-3xl border border-gray-100 bg-white p-5 shadow-sm">
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-[#103d45]">System Revenue</h2>
+            <div className="flex items-center gap-2">
+               <button className="hidden sm:inline-flex items-center gap-1 rounded-xl border border-gray-100 bg-gray-50 px-3 py-1.5 text-xs font-bold text-gray-600">This Week <MdKeyboardArrowDown /></button>
+               <button className="rounded-xl border border-gray-100 bg-gray-50 p-2 text-gray-500"><MdMoreVert /></button>
+            </div>
+          </div>
+          <div className="h-[260px] w-full pr-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                <XAxis dataKey="day" tick={{ fontSize: 10, fontWeight: 'bold', fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fontWeight: 'bold', fill: '#94a3b8' }} axisLine={false} tickLine={false} width={60} />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                  formatter={(value) => [`Tk ${Number(value).toFixed(2)}`, "Revenue"]} 
+                />
+                <Line type="monotone" dataKey="income" stroke="#b8d94a" strokeWidth={4} dot={{ r: 4, fill: "#caeb66", strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+
+        {/* Alerts Section */}
+        <section className="rounded-3xl border border-gray-100 bg-white p-5 shadow-sm">
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-[#103d45]">System Alerts</h2>
+            <Link to="/dashboard/delivery" className="text-xs font-bold text-[#b8d94a] hover:underline">Manage All</Link>
+          </div>
+          <div className="mb-4 grid grid-cols-3 gap-2 text-center">
+            <div className="rounded-2xl bg-orange-50 p-3">
+              <p className="text-lg font-black text-orange-600">{alerts.damaged}</p>
+              <p className="text-[9px] font-bold uppercase text-orange-400">Damaged</p>
+            </div>
+            <div className="rounded-2xl bg-amber-50 p-3">
+              <p className="text-lg font-black text-amber-600">{alerts.delayed}</p>
+              <p className="text-[9px] font-bold uppercase text-amber-400">Delayed</p>
+            </div>
+            <div className="rounded-2xl bg-rose-50 p-3">
+              <p className="text-lg font-black text-rose-600">{alerts.failed}</p>
+              <p className="text-[9px] font-bold uppercase text-rose-400">Failed</p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            {[{ title: "Damaged Items", count: alerts.damaged, color: 'text-orange-500' }, { title: "Delayed Shipments", count: alerts.delayed, color: 'text-amber-500' }, { title: "Failed Deliveries", count: alerts.failed, color: 'text-rose-500' }].map((alert) => (
+              <div key={alert.title} className="flex items-center justify-between rounded-xl border border-gray-50 p-3">
+                <div className="flex items-center gap-3">
+                  <span className={`flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 ${alert.color}`}><MdInfoOutline /></span>
+                  <div>
+                    <p className="text-xs font-bold text-gray-700">{alert.title}</p>
+                    <p className="text-[10px] font-medium text-gray-400">{alert.count} instances</p>
+                  </div>
+                </div>
+                <MdArrowForward className="text-gray-300" />
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      {/* Shipping Reports Table */}
+      <section className="rounded-3xl border border-gray-100 bg-white p-5 shadow-sm">
+        <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="text-lg font-bold text-[#103d45]">Global Shipping Reports</h2>
           <div className="flex items-center gap-2">
-            <button className="rounded-full bg-[#ecf5d2] px-3 py-1 text-xs font-semibold text-[#42521f]">Income</button>
-            <button className="rounded-full border border-[#dddddd] bg-white px-3 py-1 text-xs text-gray-600">Packages</button>
-            <button className="inline-flex items-center gap-1 rounded-full border border-[#dddddd] bg-white px-3 py-1 text-xs text-gray-600">
-              This Week
-              <MdKeyboardArrowDown className="text-sm" />
-            </button>
-            <button className="rounded-full border border-[#dddddd] bg-white p-1.5 text-gray-500">
-              <MdMoreVert className="text-sm" />
-            </button>
+             <button className="rounded-xl border border-gray-100 bg-gray-50 p-2 text-gray-500"><MdFilterList /></button>
+             <div className="flex items-center gap-1 rounded-xl border border-gray-100 bg-gray-50 p-1">
+                <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="p-1.5 disabled:opacity-30"><MdArrowBack /></button>
+                <span className="px-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">{currentPage} / {totalPages}</span>
+                <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="p-1.5 disabled:opacity-30"><MdArrowForward /></button>
+             </div>
           </div>
         </div>
 
-        <div className="h-[260px] rounded-lg border border-[#e2e2e2] bg-white p-3">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-              <XAxis dataKey="day" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} width={40} />
-              <Tooltip formatter={(value) => [`Tk ${Number(value).toFixed(2)}`, "Income"]} />
-              <Line type="monotone" dataKey="income" stroke="#b8d94a" strokeWidth={3} dot={{ r: 4, fill: "#caeb66" }} activeDot={{ r: 6 }} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </section>
-
-      <section className="rounded-xl border border-[#e4e4e4] bg-[#f7f7f7] p-3 sm:p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-[#262626]">Shipping Reports</h2>
-          <div className="flex items-center gap-2">
-            <button className="inline-flex items-center gap-1 rounded-full border border-[#dddddd] bg-white px-3 py-1 text-xs text-gray-600">
-              This Week
-              <MdKeyboardArrowDown className="text-sm" />
-            </button>
-            <button className="rounded-full border border-[#dddddd] bg-white p-1.5 text-gray-500">
-              <MdFilterList className="text-sm" />
-            </button>
-            <button className="rounded-full border border-[#dddddd] bg-white p-1.5 text-gray-500">
-              <MdMoreVert className="text-sm" />
-            </button>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto rounded-lg border border-[#e0e0e0] bg-white">
-          <table className="w-full min-w-[860px] text-left text-xs">
-            <thead className="bg-[#f6f6f6] text-gray-500">
-              <tr>
-                <th className="px-3 py-2 font-medium">Parcel ID</th>
-                <th className="px-3 py-2 font-medium">Client Name</th>
-                <th className="px-3 py-2 font-medium">Date</th>
-                <th className="px-3 py-2 font-medium">Weight</th>
-                <th className="px-3 py-2 font-medium">Shipper</th>
-                <th className="px-3 py-2 font-medium">Price</th>
-                <th className="px-3 py-2 font-medium">Status</th>
-                <th className="px-3 py-2 font-medium">Action</th>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[800px] text-left">
+            <thead className="bg-gray-50/50">
+              <tr className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                <th className="px-4 py-3">ID</th>
+                <th className="px-4 py-3">Client</th>
+                <th className="px-4 py-3">Date</th>
+                <th className="px-4 py-3">Price</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3 text-right">Action</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-50">
               {parcelsLoading ? (
-                <tr>
-                  <td colSpan={8} className="px-3 py-6 text-center text-gray-500">Loading shipping reports...</td>
-                </tr>
-              ) : isError ? (
-                <tr>
-                  <td colSpan={8} className="px-3 py-6 text-center text-red-500">Failed to load shipping reports.</td>
-                </tr>
+                <tr><td colSpan={6} className="py-20 text-center text-gray-400 text-sm">Loading data...</td></tr>
               ) : paginatedRows.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="px-3 py-6 text-center text-gray-500">No parcel data found.</td>
-                </tr>
+                <tr><td colSpan={6} className="py-20 text-center text-gray-400 text-sm">No records found</td></tr>
               ) : (
                 paginatedRows.map((row) => (
-                  <tr key={`${row.id}-${row.date}`} className="border-t border-[#efefef] text-gray-600">
-                    <td className="px-3 py-2">{row.id}</td>
-                    <td className="px-3 py-2">{row.client}</td>
-                    <td className="px-3 py-2">{row.date}</td>
-                    <td className="px-3 py-2">{row.weight}</td>
-                    <td className="px-3 py-2">{row.shipper}</td>
-                    <td className="px-3 py-2">{row.price}</td>
-                    <td className="px-3 py-2">
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${statusColor[row.status] || statusColor.pending}`}>
+                  <tr key={row.parcelId} className="hover:bg-gray-50/30 transition-colors">
+                    <td className="px-4 py-3 font-mono text-[10px] font-bold text-[#103d45]">{row.id}</td>
+                    <td className="px-4 py-3 text-xs font-bold text-gray-700">{row.client}</td>
+                    <td className="px-4 py-3 text-[10px] font-bold text-gray-400">{row.date}</td>
+                    <td className="px-4 py-3 text-xs font-black text-[#103d45]">Tk {row.price}</td>
+                    <td className="px-4 py-3">
+                      <span className={`rounded-full px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider ${statusColor[row.status] || statusColor.pending}`}>
                         {row.status.replace(/-/g, " ")}
                       </span>
                     </td>
-                    <td className="px-3 py-2">
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => navigate(`/dashboard/parcels/${row.parcelId}`)} className="inline-flex items-center gap-1 text-gray-500 hover:text-gray-700">
-                          <MdEdit className="text-sm" /> View
-                        </button>
-                        <button onClick={() => navigate(`/dashboard/manage/${row.parcelId}`)} className="rounded bg-[#caeb66] px-2 py-1 text-[10px] font-semibold text-[#111]">
-                          Manage
-                        </button>
-                      </div>
+                    <td className="px-4 py-3 text-right">
+                       <div className="flex justify-end gap-1.5">
+                        <button onClick={() => navigate(`/dashboard/parcels/${row.parcelId}`)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gray-50 text-gray-400 hover:bg-[#caeb66] hover:text-[#1c2d1a] transition-all"><MdVisibility /></button>
+                        <button onClick={() => navigate(`/dashboard/manage/${row.parcelId}`)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#103d45] text-white hover:brightness-125 transition-all"><MdSettings className="text-sm" /></button>
+                       </div>
                     </td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
-        </div>
-
-        <div className="mt-3 flex items-center justify-between text-xs">
-          <button
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-            className="inline-flex items-center gap-1 rounded-full border border-[#dddddd] bg-white px-3 py-1 text-gray-600 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <MdArrowBack /> Previous
-          </button>
-          <div className="flex items-center gap-3 text-gray-400">
-            {Array.from({ length: totalPages }).slice(0, 5).map((_, idx) => {
-              const page = idx + 1;
-              return (
-                <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] ${currentPage === page ? "bg-[#caeb66] text-[#1f1f1f]" : "text-gray-500"}`}
-                >
-                  {page}
-                </button>
-              );
-            })}
-          </div>
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
-            className="inline-flex items-center gap-1 rounded-full border border-[#dddddd] bg-white px-3 py-1 text-gray-600 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            Next <MdArrowForward />
-          </button>
-        </div>
-      </section>
-
-      <section className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        <div className="rounded-xl border border-[#e4e4e4] bg-[#f7f7f7] p-3 sm:p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-[#262626]">Late Invoices</h2>
-            <Link to="/dashboard/payments" className="rounded-full bg-[#caeb66] px-3 py-1 text-[11px] font-medium text-[#1f1f1f]">View All Invoices</Link>
-          </div>
-          <div className="overflow-hidden rounded-lg border border-[#e0e0e0] bg-white">
-            <table className="w-full text-xs">
-              <thead className="bg-[#f6f6f6] text-gray-500">
-                <tr>
-                  <th className="px-3 py-2 text-left font-medium">No</th>
-                  <th className="px-3 py-2 text-left font-medium">Price</th>
-                  <th className="px-3 py-2 text-left font-medium">Date</th>
-                  <th className="px-3 py-2 text-left font-medium">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {lateInvoices.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="px-3 py-6 text-center text-gray-500">No late invoices.</td>
-                  </tr>
-                ) : (
-                  lateInvoices.map((parcel) => (
-                    <tr key={parcel._id} className="border-t border-[#efefef] text-gray-600">
-                      <td className="px-3 py-2">#{String(parcel._id || "").slice(-10).toUpperCase()}</td>
-                      <td className="px-3 py-2">{(Number(parcel.amount) || 0).toFixed(2)}</td>
-                      <td className="px-3 py-2">{new Date(parcel.createdAt || Date.now()).toLocaleDateString()}</td>
-                      <td className="px-3 py-2 text-right">
-                        <MdMoreVert className="inline text-gray-500" />
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-[#e4e4e4] bg-[#f7f7f7] p-3 sm:p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-[#262626]">Shipment Alerts</h2>
-            <Link to="/dashboard/delivery" className="rounded-full bg-[#caeb66] px-3 py-1 text-[11px] font-medium text-[#1f1f1f]">View All alerts</Link>
-          </div>
-
-          <div className="mb-3 grid grid-cols-3 gap-2 rounded-lg border border-[#e0e0e0] bg-white p-3 text-center">
-            <div>
-              <p className="text-lg font-semibold text-[#1f1f1f]">{alerts.damaged}</p>
-              <p className="text-[10px] text-gray-400">Damaged</p>
-            </div>
-            <div>
-              <p className="text-lg font-semibold text-[#1f1f1f]">{alerts.delayed}</p>
-              <p className="text-[10px] text-gray-400">Delayed</p>
-            </div>
-            <div>
-              <p className="text-lg font-semibold text-[#1f1f1f]">{alerts.failed}</p>
-              <p className="text-[10px] text-gray-400">Failed</p>
-            </div>
-          </div>
-
-          <div className="space-y-2 rounded-lg border border-[#e0e0e0] bg-white p-2">
-            {[
-              { title: "Damaged", count: alerts.damaged },
-              { title: "Delayed", count: alerts.delayed },
-              { title: "Failed", count: alerts.failed },
-            ].map((alert) => (
-              <div key={alert.title} className="flex items-center justify-between rounded-md border border-[#efefef] px-2 py-2">
-                <div className="flex items-center gap-2">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#ffe6e6] text-[#d45d5d]">
-                    <MdInfoOutline className="text-[12px]" />
-                  </span>
-                  <div>
-                    <p className="text-xs font-medium text-[#1f1f1f]">{alert.title}</p>
-                    <p className="text-[10px] text-gray-400">{alert.count} shipment(s)</p>
-                  </div>
-                </div>
-                <MdArrowForward className="text-gray-400" />
-              </div>
-            ))}
-          </div>
         </div>
       </section>
     </div>

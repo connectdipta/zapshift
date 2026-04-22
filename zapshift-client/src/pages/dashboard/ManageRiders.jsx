@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+import { useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import axiosSecure from "../../hooks/useAxiosSecure";
+import { MdOutlinePeopleAlt, MdVerified, MdOutlineEmail, MdLocationOn, MdDeleteOutline, MdVisibility, MdClose, MdPerson } from "react-icons/md";
 
 const ManageRiders = () => {
   const [selectedRider, setSelectedRider] = useState(null);
+  const [searchParams] = useSearchParams();
+  const filterStatus = searchParams.get("status");
 
   const { data: riders = [], isLoading, refetch } = useQuery({
     queryKey: ["admin-riders"],
@@ -14,15 +18,24 @@ const ManageRiders = () => {
     },
   });
 
+  const filteredRiders = React.useMemo(() => {
+    if (!filterStatus) return riders;
+    return riders.filter(r => String(r.applicationStatus || r.riderStatus).toLowerCase() === filterStatus.toLowerCase());
+  }, [riders, filterStatus]);
+
   const review = async (id, action) => {
-    await axiosSecure.patch(`/users/riders/${id}/review`, { action });
-    await Swal.fire({
-      icon: "success",
-      title: action === "approve" ? "Rider approved" : "Rider rejected",
-      confirmButtonColor: "#caeb66",
-    });
-    setSelectedRider(null);
-    refetch();
+    try {
+      await axiosSecure.patch(`/users/riders/${id}/review`, { action });
+      await Swal.fire({
+        icon: "success",
+        title: action === "approve" ? "Rider approved" : "Rider rejected",
+        confirmButtonColor: "#b8d94a",
+      });
+      setSelectedRider(null);
+      refetch();
+    } catch (error) {
+      await Swal.fire({ icon: "error", title: "Action failed", text: error.message });
+    }
   };
 
   const removeRider = async (rider) => {
@@ -40,79 +53,89 @@ const ManageRiders = () => {
 
     if (!result.isConfirmed) return;
 
-    await axiosSecure.delete(`/users/riders/${rider._id}`);
-    await Swal.fire({
-      icon: "success",
-      title: "Rider deleted",
-      confirmButtonColor: "#caeb66",
-    });
-    setSelectedRider(null);
-    refetch();
+    try {
+      await axiosSecure.delete(`/users/riders/${rider._id}`);
+      await Swal.fire({ icon: "success", title: "Rider deleted", confirmButtonColor: "#b8d94a" });
+      setSelectedRider(null);
+      refetch();
+    } catch (error) {
+      await Swal.fire({ icon: "error", title: "Delete failed", text: error.message });
+    }
   };
 
   const statusLabel = (status) => {
     const value = String(status || "pending").toLowerCase();
-    const classes = {
-      pending: "bg-amber-50 text-amber-700 border-amber-200",
-      approved: "bg-green-50 text-green-700 border-green-200",
-      rejected: "bg-red-50 text-red-700 border-red-200",
+    const colors = {
+      pending: "bg-amber-50 text-amber-600 border-amber-100",
+      approved: "bg-green-50 text-green-600 border-green-100",
+      rejected: "bg-red-50 text-red-600 border-red-100",
     };
 
     return (
-      <span className={`inline-flex rounded-full border px-2 py-1 text-xs font-semibold ${classes[value] || classes.pending}`}>
+      <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider ${colors[value] || colors.pending}`}>
         {value}
       </span>
     );
   };
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-2xl bg-white p-6 shadow-sm">
-        <h1 className="text-3xl font-bold text-gray-900">Manage Riders</h1>
-        <p className="mt-2 text-gray-600">Review rider applications, inspect details, and approve or reject.</p>
+    <div className="space-y-6">
+      <div className="rounded-3xl bg-white p-6 shadow-sm sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#103d45]">Manage Riders</h1>
+          <p className="mt-1 text-sm text-gray-500">Review and verify applications for new delivery riders.</p>
+        </div>
+        <div className="bg-gray-50 px-4 py-2 rounded-xl border border-gray-100 flex items-center gap-2">
+           <MdOutlinePeopleAlt className="text-gray-400 text-xl" />
+           <span className="text-lg font-black text-[#103d45]">{filteredRiders.length}</span>
+        </div>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl bg-white p-4 shadow-sm">
-        <table className="w-full min-w-[920px] text-sm">
-          <thead>
-            <tr className="border-b border-gray-200 text-left text-gray-500">
-              <th className="px-3 py-2">Name</th>
-              <th className="px-3 py-2">Email</th>
-              <th className="px-3 py-2">District</th>
-              <th className="px-3 py-2">Status</th>
-              <th className="px-3 py-2">Actions</th>
+      {/* Desktop Table */}
+      <div className="hidden lg:block overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
+        <table className="w-full text-left">
+          <thead className="bg-gray-50/50">
+            <tr className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+              <th className="px-6 py-4">Rider</th>
+              <th className="px-6 py-4">Contact</th>
+              <th className="px-6 py-4">District</th>
+              <th className="px-6 py-4">Status</th>
+              <th className="px-6 py-4 text-right">Action</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-50">
             {isLoading ? (
-              <tr><td colSpan={5} className="px-3 py-6 text-center text-gray-500">Loading riders...</td></tr>
-            ) : riders.length === 0 ? (
-              <tr><td colSpan={5} className="px-3 py-6 text-center text-gray-500">No rider requests found.</td></tr>
+              <tr><td colSpan={5} className="py-20 text-center text-gray-400 text-sm">Fetching riders...</td></tr>
+            ) : filteredRiders.length === 0 ? (
+              <tr><td colSpan={5} className="py-20 text-center text-gray-400 text-sm">No applications found</td></tr>
             ) : (
-              riders.map((rider) => (
-                <tr key={rider._id} className="border-b border-gray-100">
-                  <td className="px-3 py-2 font-medium text-gray-900">{rider.name || "User"}</td>
-                  <td className="px-3 py-2 text-gray-600">{rider.email}</td>
-                  <td className="px-3 py-2 text-gray-600">{rider.district || "-"}</td>
-                  <td className="px-3 py-2">{statusLabel(rider.applicationStatus || rider.riderStatus)}</td>
-                  <td className="px-3 py-2">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => setSelectedRider(rider)}
-                        className="rounded-md border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-50"
-                      >
-                        View details
-                      </button>
-                      {String(rider.applicationStatus || rider.riderStatus).toLowerCase() === "approved" ? (
-                        <button onClick={() => removeRider(rider)} className="rounded-md border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold text-red-600">
-                          Delete
-                        </button>
-                      ) : (
-                        <>
-                          <button onClick={() => review(rider._id, "approve")} className="rounded-md bg-[#caeb66] px-3 py-1 text-xs font-semibold text-[#111]">Approve</button>
-                          <button onClick={() => review(rider._id, "reject")} className="rounded-md border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold text-red-600">Reject</button>
-                        </>
-                      )}
+              filteredRiders.map((rider) => (
+                <tr key={rider._id} className="group hover:bg-gray-50/30 transition-colors">
+                  <td className="px-6 py-4">
+                    <p className="text-sm font-bold text-gray-800">{rider.name || "Anonymous"}</p>
+                    <p className="text-[10px] font-medium text-gray-400">{rider.email}</p>
+                  </td>
+                  <td className="px-6 py-4">
+                    <p className="text-xs font-bold text-gray-600">{rider.contact || "-"}</p>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-gray-600">
+                      <MdLocationOn className="text-gray-300" />
+                      {rider.district || "-"}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">{statusLabel(rider.applicationStatus || rider.riderStatus)}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center justify-end gap-2">
+                       <button onClick={() => setSelectedRider(rider)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gray-50 text-gray-400 hover:bg-[#caeb66] hover:text-[#1c2d1a] transition-all"><MdVisibility /></button>
+                       {String(rider.applicationStatus || rider.riderStatus).toLowerCase() === 'approved' ? (
+                         <button onClick={() => removeRider(rider)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-400 hover:bg-rose-500 hover:text-white transition-all"><MdDeleteOutline /></button>
+                       ) : (
+                         <div className="flex gap-2">
+                            <button onClick={() => review(rider._id, "approve")} className="rounded-lg bg-[#caeb66] px-3 py-1.5 text-[10px] font-black uppercase text-[#1c2d1a]">Approve</button>
+                            <button onClick={() => review(rider._id, "reject")} className="rounded-lg bg-rose-50 px-3 py-1.5 text-[10px] font-black uppercase text-rose-500">Reject</button>
+                         </div>
+                       )}
                     </div>
                   </td>
                 </tr>
@@ -122,85 +145,80 @@ const ManageRiders = () => {
         </table>
       </div>
 
-      {selectedRider ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl">
-            <div className="flex items-start justify-between gap-4 border-b border-gray-100 pb-4">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">Rider Application Details</h2>
-                <p className="mt-1 text-sm text-gray-500">Submitted rider information for admin review.</p>
-              </div>
-              <button
-                onClick={() => setSelectedRider(null)}
-                className="rounded-full border border-gray-200 px-3 py-1 text-sm text-gray-600 hover:bg-gray-50"
-              >
-                Close
-              </button>
+      {/* Mobile Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:hidden">
+        {filteredRiders.map((rider) => (
+          <div key={rider._id} className="group relative overflow-hidden rounded-3xl border border-gray-100 bg-white p-6 shadow-sm transition hover:shadow-md">
+             <div className="flex justify-between items-start">
+               <div>
+                 <h3 className="text-base font-extrabold text-[#103d45]">{rider.name || "Anonymous"}</h3>
+                 <p className="text-[10px] font-medium text-gray-400">{rider.email}</p>
+               </div>
+               {statusLabel(rider.applicationStatus || rider.riderStatus)}
+             </div>
+             
+             <div className="flex items-center gap-4 text-[11px] font-bold text-gray-600 border-y border-gray-50 py-3">
+                <div className="flex items-center gap-1"><MdLocationOn className="text-gray-300" /> {rider.district || "-"}</div>
+                <div className="flex items-center gap-1 font-mono">{rider.contact || "-"}</div>
+             </div>
+
+             <div className="flex gap-2 pt-1">
+                <button onClick={() => setSelectedRider(rider)} className="flex-1 rounded-xl bg-gray-50 py-2.5 text-xs font-bold text-gray-600 border border-gray-100">Details</button>
+                {String(rider.applicationStatus || rider.riderStatus).toLowerCase() === 'approved' ? (
+                  <button onClick={() => removeRider(rider)} className="rounded-xl bg-rose-50 text-rose-500 px-4 py-2.5 border border-rose-100"><MdDeleteOutline /></button>
+                ) : (
+                  <button onClick={() => review(rider._id, "approve")} className="flex-1 rounded-xl bg-[#caeb66] py-2.5 text-xs font-black text-[#1c2d1a]">Approve</button>
+                )}
+             </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Rider Detail Modal */}
+      {selectedRider && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#103d45]/20 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-2xl rounded-[2.5rem] bg-white p-6 shadow-2xl sm:p-10 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-[#b8d94a]" />
+            <button onClick={() => setSelectedRider(null)} className="absolute right-6 top-6 h-10 w-10 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 transition-all"><MdClose className="text-xl" /></button>
+            
+            <div className="mb-8">
+               <h2 className="text-2xl font-black text-[#103d45]">Rider Application</h2>
+               <p className="text-sm font-medium text-gray-400">Detailed verification data</p>
             </div>
 
-            <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl bg-gray-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Name</p>
-                <p className="mt-1 text-sm font-medium text-gray-900">{selectedRider.name || "-"}</p>
-              </div>
-              <div className="rounded-2xl bg-gray-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Email</p>
-                <p className="mt-1 text-sm font-medium text-gray-900">{selectedRider.email || "-"}</p>
-              </div>
-              <div className="rounded-2xl bg-gray-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Age</p>
-                <p className="mt-1 text-sm font-medium text-gray-900">{selectedRider.age || "-"}</p>
-              </div>
-              <div className="rounded-2xl bg-gray-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">District</p>
-                <p className="mt-1 text-sm font-medium text-gray-900">{selectedRider.district || "-"}</p>
-              </div>
-              <div className="rounded-2xl bg-gray-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">NID</p>
-                <p className="mt-1 text-sm font-medium text-gray-900">{selectedRider.nid || "-"}</p>
-              </div>
-              <div className="rounded-2xl bg-gray-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Contact</p>
-                <p className="mt-1 text-sm font-medium text-gray-900">{selectedRider.contact || "-"}</p>
-              </div>
-              <div className="rounded-2xl bg-gray-50 p-4 sm:col-span-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Preferred Warehouse</p>
-                <p className="mt-1 text-sm font-medium text-gray-900">{selectedRider.warehouse || "-"}</p>
-              </div>
-              <div className="rounded-2xl bg-gray-50 p-4 sm:col-span-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Application Status</p>
-                <div className="mt-1">{statusLabel(selectedRider.applicationStatus || selectedRider.riderStatus)}</div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {[
+                { label: "Name", value: selectedRider.name, icon: MdPerson },
+                { label: "Email", value: selectedRider.email, icon: MdOutlineEmail },
+                { label: "District", value: selectedRider.district, icon: MdLocationOn },
+                { label: "NID Number", value: selectedRider.nid, icon: MdVerified },
+                { label: "Age", value: `${selectedRider.age} Years` },
+                { label: "Contact", value: selectedRider.contact },
+              ].map((item, idx) => (
+                <div key={idx} className="rounded-2xl bg-gray-50/50 p-4 border border-gray-100">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{item.label}</p>
+                  <p className="mt-1 text-sm font-bold text-[#103d45] truncate">{item.value || "-"}</p>
+                </div>
+              ))}
+              <div className="rounded-2xl bg-gray-50/50 p-4 border border-gray-100 sm:col-span-2">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Preferred Warehouse</p>
+                <p className="mt-1 text-sm font-bold text-[#103d45]">{selectedRider.warehouse || "-"}</p>
               </div>
             </div>
 
-            <div className="mt-6 flex flex-wrap gap-3 border-t border-gray-100 pt-4">
+            <div className="mt-8 flex flex-wrap gap-3">
               {String(selectedRider.applicationStatus || selectedRider.riderStatus).toLowerCase() === "approved" ? (
-                <button
-                  onClick={() => removeRider(selectedRider)}
-                  className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-600"
-                >
-                  Delete
-                </button>
+                <button onClick={() => removeRider(selectedRider)} className="rounded-xl bg-rose-500 px-8 py-3 text-sm font-black text-white transition hover:brightness-110 active:scale-95 shadow-lg shadow-rose-100">Remove Rider</button>
               ) : (
                 <>
-                  <button
-                    onClick={() => review(selectedRider._id, "approve")}
-                    className="rounded-lg bg-[#caeb66] px-4 py-2 text-sm font-semibold text-[#111]"
-                  >
-                    Approve
-                  </button>
-                  <button
-                    onClick={() => review(selectedRider._id, "reject")}
-                    className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-600"
-                  >
-                    Reject
-                  </button>
+                  <button onClick={() => review(selectedRider._id, "approve")} className="rounded-xl bg-[#caeb66] px-8 py-3 text-sm font-black text-[#1c2d1a] transition hover:brightness-95 active:scale-95 shadow-lg shadow-lime-100">Approve Application</button>
+                  <button onClick={() => review(selectedRider._id, "reject")} className="rounded-xl border border-gray-100 bg-white px-8 py-3 text-sm font-bold text-rose-500 transition hover:bg-rose-50 active:scale-95">Reject</button>
                 </>
               )}
             </div>
           </div>
         </div>
-      ) : null}
+      )}
     </div>
   );
 };

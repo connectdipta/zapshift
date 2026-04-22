@@ -5,11 +5,11 @@ import {
   MdMoreVert,
   MdKeyboardArrowDown,
   MdFilterList,
-  MdEdit,
   MdArrowForward,
   MdArrowBack,
   MdInfoOutline,
   MdAdd,
+  MdVisibility,
 } from "react-icons/md";
 import useUserParcels from "../../../hooks/useUserParcels";
 
@@ -20,26 +20,28 @@ const UserDashboardHome = () => {
   const rowsPerPage = 6;
 
   const stats = [
-    { title: "To Pay", value: parcels.filter((p) => p.paymentStatus !== "paid").length.toLocaleString() },
-    { title: "Ready Pick Up", value: parcels.filter((p) => p.normalizedStatus === "ready-to-pickup").length.toLocaleString() },
-    { title: "In Transit", value: parcels.filter((p) => p.normalizedStatus === "in-transit").length.toLocaleString() },
-    { title: "Ready to Deliver", value: parcels.filter((p) => p.normalizedStatus === "ready-for-delivery").length.toLocaleString() },
-    { title: "Delivered", value: parcels.filter((p) => p.normalizedStatus === "delivered").length.toLocaleString() },
+    { title: "To Pay", value: parcels.filter((p) => p.paymentStatus !== "paid").length, color: "text-red-500" },
+    { title: "Ready Pick Up", value: parcels.filter((p) => p.normalizedStatus === "ready-to-pickup").length, color: "text-amber-500" },
+    { title: "In Transit", value: parcels.filter((p) => p.normalizedStatus === "in-transit").length, color: "text-blue-500" },
+    { title: "Ready to Deliver", value: parcels.filter((p) => p.normalizedStatus === "ready-for-delivery").length, color: "text-orange-500" },
+    { title: "Delivered", value: parcels.filter((p) => p.normalizedStatus === "delivered").length, color: "text-green-500" },
   ];
 
-  const shippingRows = parcels
-    .slice()
-    .sort((a, b) => b.createdAt - a.createdAt)
-    .map((p) => ({
-      id: `#${String(p._id || "").slice(-6).toUpperCase() || "PARCEL"}`,
-      client: p.receiverName || "N/A",
-      date: p.createdAt.toLocaleDateString(),
-      weight: `${p.parcelWeight || 0} kg`,
-      shipper: p.parcelType === "document" ? "Document" : "Parcel",
-      price: `${p.amount.toFixed(2)}`,
-      status: p.normalizedStatus,
-      parcelId: p._id,
-    }));
+  const shippingRows = useMemo(() => {
+    return parcels
+      .slice()
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .map((p) => ({
+        id: `#${String(p._id || "").slice(-6).toUpperCase() || "PARCEL"}`,
+        client: p.receiverName || "N/A",
+        date: p.createdAt.toLocaleDateString(),
+        weight: `${p.parcelWeight || 0} kg`,
+        shipper: p.parcelType === "document" ? "Document" : "Parcel",
+        price: `${p.amount.toFixed(2)}`,
+        status: p.normalizedStatus,
+        parcelId: p._id,
+      }));
+  }, [parcels]);
 
   const totalPages = Math.max(1, Math.ceil(shippingRows.length / rowsPerPage));
 
@@ -49,176 +51,157 @@ const UserDashboardHome = () => {
   }, [shippingRows, currentPage]);
 
   const statusColor = {
-    delivered: "bg-[#dff7e9] text-[#2d8f55]",
-    "in-transit": "bg-[#e8edff] text-[#4368e8]",
-    waiting: "bg-[#ffe6e6] text-[#e36363]",
-    pending: "bg-[#fff2db] text-[#d18b23]",
-    processing: "bg-[#e8edff] text-[#4368e8]",
-    "ready-to-pickup": "bg-[#fff2db] text-[#d18b23]",
-    "ready-for-delivery": "bg-[#e8edff] text-[#4368e8]",
-    "reached-service-center": "bg-[#edf1ff] text-[#5465bf]",
-    shipped: "bg-[#eaf3ff] text-[#3063cc]",
+    delivered: "bg-green-100 text-green-700",
+    "in-transit": "bg-blue-100 text-blue-700",
+    waiting: "bg-red-100 text-red-700",
+    pending: "bg-gray-100 text-gray-700",
+    processing: "bg-indigo-100 text-indigo-700",
+    "ready-to-pickup": "bg-amber-100 text-amber-700",
+    "ready-for-delivery": "bg-orange-100 text-orange-700",
+    "reached-service-center": "bg-sky-100 text-sky-700",
+    shipped: "bg-cyan-100 text-cyan-700",
   };
 
-  const lateInvoices = parcels.filter((p) => p.paymentStatus !== "paid").slice(0, 6);
-
-  const damagedCount = parcels.filter((p) => p.normalizedStatus === "waiting").length;
-  const weatherDelayCount = parcels.filter((p) => p.normalizedStatus === "in-transit").length;
+  const lateInvoices = parcels.filter((p) => p.paymentStatus !== "paid").slice(0, 5);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-start justify-between gap-3">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-[#1f1f1f]">Dashboard Overview</h1>
-          <p className="text-[11px] text-gray-500">You can access all your data and information from anywhere.</p>
+          <h1 className="text-2xl font-extrabold text-[#103d45]">Dashboard Overview</h1>
+          <p className="text-xs text-gray-500">Access your delivery data and information from anywhere.</p>
         </div>
         <button
           onClick={() => navigate("/dashboard/user/send-parcel")}
-          className="inline-flex items-center gap-1 rounded-lg bg-[#caeb66] px-3 py-2 text-xs font-semibold text-[#111] hover:bg-[#bedd5f]"
+          className="inline-flex w-fit items-center gap-2 rounded-xl bg-[#caeb66] px-5 py-3 text-sm font-bold text-[#1c2d1a] transition hover:brightness-95 active:scale-95"
         >
-          <MdAdd className="text-sm" />
-          Add Parcel
+          <MdAdd className="text-lg" />
+          Send New Parcel
         </button>
       </div>
 
-      <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+      {/* Stats Cards */}
+      <section className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
         {stats.map((item) => (
-          <div key={item.title} className="rounded-xl border border-[#e8e8e8] bg-[#f8f8f8] p-3">
-            <div className="mb-1 flex items-center gap-2 text-[11px] text-gray-500">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full border border-[#dddddd]">
-                <MdLocalShipping className="text-[12px]" />
+          <div key={item.title} className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition hover:shadow-md">
+            <div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-gray-50 text-gray-400">
+                <MdLocalShipping className="text-sm" />
               </span>
               {item.title}
             </div>
-            <p className="pl-7 text-[30px] font-semibold leading-none text-[#1f1f1f]">{item.value}</p>
+            <p className={`text-2xl font-black ${item.color || "text-[#103d45]"}`}>{item.value.toLocaleString()}</p>
           </div>
         ))}
       </section>
 
-      <section className="rounded-xl border border-[#e4e4e4] bg-[#f7f7f7] p-3 sm:p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-[#262626]">Overall Statistics</h2>
+      <div className="grid gap-6 xl:grid-cols-3">
+        {/* Main Chart Section */}
+        <section className="xl:col-span-2 rounded-3xl border border-gray-100 bg-white p-5 shadow-sm">
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-[#103d45]">Delivery Trends</h2>
+            <div className="flex items-center gap-2">
+              <button className="hidden sm:inline-flex items-center gap-1 rounded-xl border border-gray-100 bg-gray-50 px-3 py-1.5 text-xs font-bold text-gray-600">
+                This Week
+                <MdKeyboardArrowDown className="text-sm" />
+              </button>
+              <button className="rounded-xl border border-gray-100 bg-gray-50 p-2 text-gray-500">
+                <MdMoreVert className="text-sm" />
+              </button>
+            </div>
+          </div>
+
+          <div className="relative h-[240px] w-full overflow-hidden rounded-2xl bg-gray-50/50 p-4">
+            <div className="absolute inset-4 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:60px_40px]" />
+            <div className="absolute inset-0 flex items-end px-12 pb-8">
+               {/* Simplified responsive area chart mockup */}
+               <svg viewBox="0 0 900 200" className="w-full h-full preserve-3d">
+                <path d="M0,150 C100,140 150,50 300,80 C450,110 500,180 650,120 C800,60 850,20 900,50 L900,200 L0,200 Z" fill="rgba(202, 235, 102, 0.2)" />
+                <path d="M0,150 C100,140 150,50 300,80 C450,110 500,180 650,120 C800,60 850,20 900,50" fill="none" stroke="#b8d94a" strokeWidth="4" strokeLinecap="round" />
+               </svg>
+            </div>
+          </div>
+        </section>
+
+        {/* Shipment Alerts */}
+        <section className="rounded-3xl border border-gray-100 bg-white p-5 shadow-sm">
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-[#103d45]">Shipment Alerts</h2>
+            <Link to="/dashboard/user/parcels" className="text-xs font-bold text-[#b8d94a] hover:underline">View All</Link>
+          </div>
+
+          <div className="space-y-3">
+            {parcels.slice(0, 4).length === 0 ? (
+              <p className="py-10 text-center text-xs text-gray-400 font-medium">No recent alerts</p>
+            ) : (
+              parcels.slice(0, 4).map((parcel) => (
+                <div key={parcel._id} onClick={() => navigate(`/dashboard/user/parcels/${parcel._id}`)} className="group flex cursor-pointer items-center justify-between rounded-2xl border border-gray-50 p-3 transition hover:bg-gray-50">
+                  <div className="flex items-center gap-3">
+                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${parcel.normalizedStatus === 'delivered' ? 'bg-green-50 text-green-500' : 'bg-amber-50 text-amber-500'}`}>
+                      <MdInfoOutline className="text-xl" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-xs font-bold text-[#103d45]">{parcel.normalizedStatus.replace(/-/g, " ").toUpperCase()}</p>
+                      <p className="text-[10px] font-medium text-gray-400">#{String(parcel._id).slice(-8).toUpperCase()}</p>
+                    </div>
+                  </div>
+                  <MdArrowForward className="text-gray-300 transition group-hover:translate-x-1 group-hover:text-[#b8d94a]" />
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+      </div>
+
+      {/* Reports Table Section */}
+      <section className="rounded-3xl border border-gray-100 bg-white p-5 shadow-sm">
+        <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="text-lg font-bold text-[#103d45]">Shipping Reports</h2>
           <div className="flex items-center gap-2">
-            <button className="inline-flex items-center gap-1 rounded-full border border-[#dddddd] bg-white px-3 py-1 text-xs text-gray-600">
-              This Week
-              <MdKeyboardArrowDown className="text-sm" />
+            <button className="rounded-xl border border-gray-100 bg-gray-50 p-2 text-gray-500">
+              <MdFilterList className="text-lg" />
             </button>
-            <button className="rounded-full border border-[#dddddd] bg-white p-1.5 text-gray-500">
-              <MdMoreVert className="text-sm" />
-            </button>
+            <div className="flex items-center gap-1 rounded-xl border border-gray-100 bg-gray-50 p-1">
+               <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="p-1.5 disabled:opacity-30"><MdArrowBack /></button>
+               <span className="px-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">{currentPage} / {totalPages}</span>
+               <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="p-1.5 disabled:opacity-30"><MdArrowForward /></button>
+            </div>
           </div>
         </div>
 
-        <div className="relative h-[250px] rounded-lg border border-[#e2e2e2] bg-[#f3f3f3] p-3">
-          <div className="absolute inset-3 bg-[linear-gradient(to_right,#e4e4e4_1px,transparent_1px),linear-gradient(to_bottom,#e4e4e4_1px,transparent_1px)] bg-[size:72px_44px]" />
-          <div className="absolute left-2 top-3 flex h-[calc(100%-24px)] flex-col justify-between text-[10px] text-gray-400">
-            <span>$25k</span>
-            <span>$20k</span>
-            <span>$15k</span>
-            <span>$10k</span>
-            <span>$5k</span>
-          </div>
-
-          <div className="absolute inset-x-12 top-3 bottom-8">
-            <svg viewBox="0 0 900 220" className="relative h-full w-full">
-              <defs>
-                <linearGradient id="userAreaFill" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="#caeb66" stopOpacity="0.7" />
-                  <stop offset="100%" stopColor="#caeb66" stopOpacity="0.05" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M0,150 L80,145 L140,95 L220,95 L290,150 L350,150 L390,182 L450,182 L520,120 L590,95 L680,95 L740,140 L800,140 L840,65 L885,65 L900,150 L900,220 L0,220 Z"
-                fill="url(#userAreaFill)"
-              />
-              <path
-                d="M0,150 L80,145 L140,95 L220,95 L290,150 L350,150 L390,182 L450,182 L520,120 L590,95 L680,95 L740,140 L800,140 L840,65 L885,65 L900,150"
-                fill="none"
-                stroke="#b8d94a"
-                strokeWidth="3"
-              />
-              <line x1="450" y1="0" x2="450" y2="220" stroke="#c6d98a" strokeDasharray="5 5" />
-            </svg>
-          </div>
-
-          <div className="absolute left-[49%] top-[72px] rounded-md border border-gray-200 bg-white px-2 py-1 text-[10px] text-gray-500 shadow-sm">
-            Sun, Jul 13, 2025
-            <p className="text-[10px] font-semibold text-gray-700">$15,210.00</p>
-          </div>
-
-          <div className="absolute bottom-3 left-12 right-8 flex items-center justify-between text-[10px] text-gray-400">
-            <span>Mon</span>
-            <span>Tue</span>
-            <span>Wed</span>
-            <span>Thu</span>
-            <span>Fri</span>
-            <span>Sat</span>
-            <span>Sun</span>
-          </div>
-        </div>
-      </section>
-
-      <section className="rounded-xl border border-[#e4e4e4] bg-[#f7f7f7] p-3 sm:p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-[#262626]">Shipping Reports</h2>
-          <div className="flex items-center gap-2">
-            <button className="inline-flex items-center gap-1 rounded-full border border-[#dddddd] bg-white px-3 py-1 text-xs text-gray-600">
-              This Week
-              <MdKeyboardArrowDown className="text-sm" />
-            </button>
-            <button className="rounded-full border border-[#dddddd] bg-white p-1.5 text-gray-500">
-              <MdFilterList className="text-sm" />
-            </button>
-            <button className="rounded-full border border-[#dddddd] bg-white p-1.5 text-gray-500">
-              <MdMoreVert className="text-sm" />
-            </button>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto rounded-lg border border-[#e0e0e0] bg-white">
-          <table className="w-full min-w-[860px] text-left text-xs">
-            <thead className="bg-[#f6f6f6] text-gray-500">
-              <tr>
-                <th className="px-3 py-2 font-medium">ID</th>
-                <th className="px-3 py-2 font-medium">Client</th>
-                <th className="px-3 py-2 font-medium">Date</th>
-                <th className="px-3 py-2 font-medium">Weight</th>
-                <th className="px-3 py-2 font-medium">Shipper</th>
-                <th className="px-3 py-2 font-medium">Price</th>
-                <th className="px-3 py-2 font-medium">Status</th>
-                <th className="px-3 py-2 font-medium">Action</th>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[700px] text-left">
+            <thead className="bg-gray-50/50">
+              <tr className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                <th className="px-4 py-3">Tracking</th>
+                <th className="px-4 py-3">Receiver</th>
+                <th className="px-4 py-3">Date</th>
+                <th className="px-4 py-3">Price</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3 text-right">Action</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-50">
               {isLoading ? (
-                <tr>
-                  <td colSpan={8} className="px-3 py-6 text-center text-gray-500">Loading shipping reports...</td>
-                </tr>
-              ) : isError ? (
-                <tr>
-                  <td colSpan={8} className="px-3 py-6 text-center text-red-500">Failed to load shipping reports.</td>
-                </tr>
-              ) : shippingRows.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="px-3 py-6 text-center text-gray-500">No parcel data found.</td>
-                </tr>
+                <tr><td colSpan={6} className="py-20 text-center text-gray-400 text-sm">Fetching reports...</td></tr>
+              ) : paginatedRows.length === 0 ? (
+                <tr><td colSpan={6} className="py-20 text-center text-gray-400 text-sm">No data found</td></tr>
               ) : (
                 paginatedRows.map((row) => (
-                  <tr key={`${row.id}-${row.date}`} className="border-t border-[#efefef] text-gray-600">
-                    <td className="px-3 py-2">{row.id}</td>
-                    <td className="px-3 py-2">{row.client}</td>
-                    <td className="px-3 py-2">{row.date}</td>
-                    <td className="px-3 py-2">{row.weight}</td>
-                    <td className="px-3 py-2">{row.shipper}</td>
-                    <td className="px-3 py-2">{row.price}</td>
-                    <td className="px-3 py-2">
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${statusColor[row.status] || statusColor.pending}`}>
+                  <tr key={row.parcelId} className="hover:bg-gray-50/30 transition-colors">
+                    <td className="px-4 py-3 font-mono text-[10px] font-bold text-[#103d45]">{row.id}</td>
+                    <td className="px-4 py-3 text-xs font-bold text-gray-700">{row.client}</td>
+                    <td className="px-4 py-3 text-[10px] font-bold text-gray-400">{row.date}</td>
+                    <td className="px-4 py-3 text-xs font-black text-[#103d45]">Tk {row.price}</td>
+                    <td className="px-4 py-3">
+                      <span className={`rounded-full px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider ${statusColor[row.status] || statusColor.pending}`}>
                         {row.status.replace(/-/g, " ")}
                       </span>
                     </td>
-                    <td className="px-3 py-2">
-                      <button onClick={() => navigate(`/dashboard/user/parcels/${row.parcelId}`)} className="inline-flex items-center gap-1 text-gray-500 hover:text-gray-700">
-                        <MdEdit className="text-sm" /> View
+                    <td className="px-4 py-3 text-right">
+                      <button onClick={() => navigate(`/dashboard/user/parcels/${row.parcelId}`)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gray-50 text-gray-400 hover:bg-[#caeb66] hover:text-[#1c2d1a] transition-all">
+                        <MdVisibility />
                       </button>
                     </td>
                   </tr>
@@ -226,111 +209,6 @@ const UserDashboardHome = () => {
               )}
             </tbody>
           </table>
-        </div>
-
-        <div className="mt-3 flex items-center justify-between text-xs">
-          <button
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-            className="inline-flex items-center gap-1 rounded-full border border-[#dddddd] bg-white px-3 py-1 text-gray-600 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <MdArrowBack /> Previous
-          </button>
-          <div className="flex items-center gap-3 text-gray-400">
-            {Array.from({ length: totalPages }).slice(0, 5).map((_, idx) => {
-              const page = idx + 1;
-              return (
-                <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] ${currentPage === page ? "bg-[#caeb66] text-[#1f1f1f]" : "text-gray-500"}`}
-                >
-                  {page}
-                </button>
-              );
-            })}
-          </div>
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
-            className="inline-flex items-center gap-1 rounded-full border border-[#dddddd] bg-white px-3 py-1 text-gray-600 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            Next <MdArrowForward />
-          </button>
-        </div>
-      </section>
-
-      <section className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        <div className="rounded-xl border border-[#e4e4e4] bg-[#f7f7f7] p-3 sm:p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-[#262626]">Late Invoices</h2>
-            <Link to="/dashboard/user/invoices" className="rounded-full bg-[#caeb66] px-3 py-1 text-[11px] font-medium text-[#1f1f1f]">View All Invoices</Link>
-          </div>
-          <div className="overflow-hidden rounded-lg border border-[#e0e0e0] bg-white">
-            <table className="w-full text-xs">
-              <thead className="bg-[#f6f6f6] text-gray-500">
-                <tr>
-                  <th className="px-3 py-2 text-left font-medium">No</th>
-                  <th className="px-3 py-2 text-left font-medium">Price</th>
-                  <th className="px-3 py-2 text-left font-medium">Date</th>
-                  <th className="px-3 py-2 text-left font-medium">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {lateInvoices.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="px-3 py-6 text-center text-gray-500">No late invoices.</td>
-                  </tr>
-                ) : (
-                  lateInvoices.map((parcel) => (
-                    <tr key={parcel._id} className="border-t border-[#efefef] text-gray-600">
-                      <td className="px-3 py-2">#{String(parcel._id || "").slice(-10).toUpperCase()}</td>
-                      <td className="px-3 py-2">{parcel.amount.toFixed(2)}</td>
-                      <td className="px-3 py-2">{parcel.createdAt.toLocaleDateString()}</td>
-                      <td className="px-3 py-2 text-right">
-                        <MdMoreVert className="inline text-gray-500" />
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-[#e4e4e4] bg-[#f7f7f7] p-3 sm:p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-[#262626]">Shipment Alerts</h2>
-            <Link to="/dashboard/user/parcels" className="rounded-full bg-[#caeb66] px-3 py-1 text-[11px] font-medium text-[#1f1f1f]">View All Deliveries</Link>
-          </div>
-
-          <div className="mb-3 grid grid-cols-2 gap-2 rounded-lg border border-[#e0e0e0] bg-white p-3 text-center">
-            <div>
-              <p className="text-lg font-semibold text-[#1f1f1f]">{damagedCount}</p>
-              <p className="text-[10px] text-gray-400">Damaged</p>
-            </div>
-            <div>
-              <p className="text-lg font-semibold text-[#1f1f1f]">{weatherDelayCount}</p>
-              <p className="text-[10px] text-gray-400">Weather Delays</p>
-            </div>
-          </div>
-
-          <div className="space-y-2 rounded-lg border border-[#e0e0e0] bg-white p-2">
-            {parcels.slice(0, 4).map((parcel, i) => (
-              <div key={parcel._id || `alert-${i}`} className="flex items-center justify-between rounded-md border border-[#efefef] px-2 py-2">
-                <div className="flex items-center gap-2">
-                  <span className={`flex h-5 w-5 items-center justify-center rounded-full ${parcel.normalizedStatus === "delivered" ? "bg-[#dff7e9] text-[#2d8f55]" : "bg-[#ffe6e6] text-[#d45d5d]"}`}>
-                    <MdInfoOutline className="text-[12px]" />
-                  </span>
-                  <div>
-                    <p className="text-xs font-medium text-[#1f1f1f]">{parcel.normalizedStatus.replace(/-/g, " ")}</p>
-                    <p className="text-[10px] text-gray-400">Shipment #{String(parcel._id || "").slice(-8).toUpperCase()} - {parcel.createdAt.toLocaleDateString()}</p>
-                  </div>
-                </div>
-                <MdArrowForward className="text-gray-400" />
-              </div>
-            ))}
-          </div>
         </div>
       </section>
     </div>

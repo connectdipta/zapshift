@@ -17,7 +17,11 @@ instance.interceptors.request.use((config) => {
 instance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error?.response?.status === 401) {
+    const hadAuthHeader = Boolean(
+      error?.config?.headers?.authorization || error?.config?.headers?.Authorization
+    );
+
+    if (error?.response?.status === 401 && hadAuthHeader) {
       localStorage.removeItem("zapshift_access_token");
       localStorage.removeItem("zapshift_access_expires_at");
       if (window.location.pathname !== "/login") {
