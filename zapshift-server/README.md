@@ -6,6 +6,15 @@ Backend API for ZapShift. Provides authentication token issuance, parcel lifecyc
 
 - https://zapshift-server-ebon.vercel.app
 
+## Latest Update (April 2026)
+
+- Backend deployment was refreshed on Vercel production.
+- Active production alias:
+  - https://zapshift-server-ebon.vercel.app
+- Latest deployment URL:
+  - https://zapshift-server-ajdpoez1p-connectdiptas-projects.vercel.app
+- Health check confirmed successful response (HTTP 200).
+
 ## Stack
 
 - Node.js
@@ -139,6 +148,12 @@ npm run dev
 - Routing is configured in vercel.json.
 - Ensure MONGODB_URI and JWT_ACCESS_SECRET are set in Vercel environments.
 - Keep CORS restricted in production if needed.
+
+Recommended deploy command:
+
+```bash
+vercel deploy --prod --yes
+```
 
 ## Common Issues
 

@@ -7,20 +7,20 @@ export default function ErrorPage() {
   const error = useRouteError()
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-16">
-      <div className="max-w-3xl w-full bg-white border border-gray-200 rounded-3xl shadow-sm p-10 text-center">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-10 sm:py-16">
+      <div className="max-w-3xl w-full bg-white border border-gray-200 rounded-3xl shadow-sm p-6 sm:p-10 text-center">
         <div className="mb-8">
           <div className="mx-auto mb-6">
             <LottieAnimation 
               animationData={errorAnimation}
               loop={true}
               autoplay={true}
-              height={300}
-              width={300}
+              height={220}
+              width={220}
             />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">Page not found</h1>
-          <p className="text-gray-600 max-w-xl mx-auto">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3">Page not found</h1>
+          <p className="text-sm sm:text-base text-gray-600 max-w-xl mx-auto">
             Sorry, we couldn&apos;t find the page you were looking for. It may have been moved or removed.
           </p>
         </div>

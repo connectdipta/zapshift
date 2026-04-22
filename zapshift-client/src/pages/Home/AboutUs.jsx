@@ -169,23 +169,23 @@ Excellence: We never settle for less than the best`
   ]
 
   return (
-    <div className="mx-auto bg-white rounded-3xl p-10 pt-2 shadow-2xl mt-6 mb-6">
+    <div className="mx-auto bg-white rounded-3xl p-4 sm:p-6 lg:p-10 pt-2 shadow-2xl mt-4 sm:mt-6 mb-4 sm:mb-6">
       {/* Hero Section */}
-      <div className="relative rounded mt-3 overflow-hidden pt-12 pb-20 px-6 md:px-12" style={{ backgroundColor: 'var(--color-secondary)' }}>
+      <div className="relative rounded mt-3 overflow-hidden pt-8 sm:pt-12 pb-14 sm:pb-20 px-4 sm:px-6 md:px-12" style={{ backgroundColor: 'var(--color-secondary)' }}>
         <div className="max-w-5xl mx-auto ">
           <div className="text-center text-white">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">About ZapShift</h1>
-            <p className="text-xl md:text-2xl font-light mb-8" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">About ZapShift</h1>
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-light mb-6 sm:mb-8" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
               Transforming parcel delivery across Bangladesh with speed, reliability, and innovation
             </p>
-            <div className="flex flex-wrap justify-center gap-4 text-sm md:text-base">
-              <span className="px-6 py-2 rounded-full flex items-center gap-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', color: 'white' }}>
+            <div className="flex flex-wrap justify-center gap-3 sm:gap-4 text-xs sm:text-sm md:text-base">
+              <span className="px-4 sm:px-6 py-2 rounded-full flex items-center gap-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', color: 'white' }}>
                 <Users size={16} /> 500+ Active Riders
               </span>
-              <span className="px-6 py-2 rounded-full flex items-center gap-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', color: 'white' }}>
+              <span className="px-4 sm:px-6 py-2 rounded-full flex items-center gap-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', color: 'white' }}>
                 <Globe size={16} /> 64 Districts Covered
               </span>
-              <span className="px-6 py-2 rounded-full flex items-center gap-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', color: 'white' }}>
+              <span className="px-4 sm:px-6 py-2 rounded-full flex items-center gap-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', color: 'white' }}>
                 <Zap size={16} /> 5000+ Deliveries
               </span>
             </div>
@@ -194,11 +194,11 @@ Excellence: We never settle for less than the best`
       </div>
 
       {/* Main Content Wrapper */}
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Story Section with Tabs */}
-        <div className="py-16">
+        <div className="py-10 sm:py-16">
           <div className="mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Journey</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Journey</h2>
             <p className="text-gray-600">Learn about our mission, vision, and the values that drive us</p>
           </div>
 
@@ -228,34 +228,34 @@ Excellence: We never settle for less than the best`
           </div>
 
           {/* Tab Content */}
-          <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
-            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-lg">
+          <div className="bg-white p-5 sm:p-8 rounded-2xl shadow-lg border border-gray-100">
+            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base sm:text-lg">
               {content[activeTab]}
             </p>
           </div>
         </div>
 
         {/* Stats Section */}
-        <div className="py-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">By The Numbers</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="text-white p-8 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow" style={{ backgroundColor: 'var(--color-secondary)' }}>
-              <div className="text-4xl font-bold mb-2">5000+</div>
+        <div className="py-10 sm:py-16">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-8 sm:mb-12 text-center">By The Numbers</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="text-white p-6 sm:p-8 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow" style={{ backgroundColor: 'var(--color-secondary)' }}>
+              <div className="text-3xl sm:text-4xl font-bold mb-2">5000+</div>
               <p className="font-semibold">Deliveries Completed</p>
               <p className="text-sm mt-2" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>And counting</p>
             </div>
-            <div className="text-white p-8 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow" style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-secondary)' }}>
-              <div className="text-4xl font-bold mb-2">99%</div>
+            <div className="text-white p-6 sm:p-8 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow" style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-secondary)' }}>
+              <div className="text-3xl sm:text-4xl font-bold mb-2">99%</div>
               <p className="font-semibold">On-Time Delivery</p>
               <p className="text-sm mt-2" style={{ color: 'var(--color-secondary)', opacity: 0.7 }}>Reliability guaranteed</p>
             </div>
-            <div className="text-white p-8 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow" style={{ backgroundColor: 'var(--color-secondary)' }}>
-              <div className="text-4xl font-bold mb-2">500+</div>
+            <div className="text-white p-6 sm:p-8 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow" style={{ backgroundColor: 'var(--color-secondary)' }}>
+              <div className="text-3xl sm:text-4xl font-bold mb-2">500+</div>
               <p className="font-semibold">Active Riders</p>
               <p className="text-sm mt-2" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Professional partners</p>
             </div>
-            <div className="text-white p-8 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow" style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-secondary)' }}>
-              <div className="text-4xl font-bold mb-2">64</div>
+            <div className="text-white p-6 sm:p-8 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow" style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-secondary)' }}>
+              <div className="text-3xl sm:text-4xl font-bold mb-2">64</div>
               <p className="font-semibold">Districts Served</p>
               <p className="text-sm mt-2" style={{ color: 'var(--color-secondary)', opacity: 0.7 }}>Nationwide coverage</p>
             </div>
@@ -263,13 +263,13 @@ Excellence: We never settle for less than the best`
         </div>
 
         {/* Key Features */}
-        <div className="py-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">Why Choose ZapShift?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="py-10 sm:py-16">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-8 sm:mb-12 text-center">Why Choose ZapShift?</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
             {keyFeatures.map((feature, idx) => {
               const IconComponent = feature.icon
               return (
-                <div key={idx} className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-shadow border border-gray-100" style={{ borderColor: 'var(--color-primary)' }}>
+                <div key={idx} className="bg-white p-6 sm:p-8 rounded-2xl shadow-md hover:shadow-xl transition-shadow border border-gray-100" style={{ borderColor: 'var(--color-primary)' }}>
                   <IconComponent size={48} style={{ color: 'var(--color-secondary)', marginBottom: '1rem' }} />
                   <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
                   <p className="text-gray-600 leading-relaxed">{feature.description}</p>
@@ -280,19 +280,19 @@ Excellence: We never settle for less than the best`
         </div>
 
         {/* Delivery Workflow */}
-        <div className="py-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">How ZapShift Works</h2>
+        <div className="py-10 sm:py-16">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-8 sm:mb-12 text-center">How ZapShift Works</h2>
           <div className="relative">
             <div className="hidden md:block absolute top-12 left-0 right-0 h-1" style={{ backgroundColor: 'var(--color-primary)' }}></div>
-            <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 sm:gap-6">
               {workflow.map((item, idx) => (
                 <div key={idx} className="relative">
-                  <div className="bg-white rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6 shadow-lg border-4 z-10 relative" style={{ borderColor: 'var(--color-secondary)' }}>
+                  <div className="bg-white rounded-full w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-lg border-4 z-10 relative" style={{ borderColor: 'var(--color-secondary)' }}>
                     <div className="text-center">
                       <div className="text-2xl font-bold" style={{ color: 'var(--color-secondary)' }}>{item.step}</div>
                     </div>
                   </div>
-                  <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                  <div className="bg-white p-5 sm:p-6 rounded-2xl shadow-md border border-gray-100">
                     <h3 className="font-bold text-gray-900 mb-2 text-center">{item.title}</h3>
                     <p className="text-sm text-gray-600 text-center">{item.description}</p>
                   </div>
@@ -303,12 +303,12 @@ Excellence: We never settle for less than the best`
         </div>
 
         {/* Pricing Section */}
-        <div className="py-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center">Transparent Pricing</h2>
-          <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">No hidden charges. Clear, straightforward pricing based on your parcel type, weight, and delivery distance.</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="py-10 sm:py-16">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center">Transparent Pricing</h2>
+          <p className="text-gray-600 text-center mb-8 sm:mb-12 max-w-2xl mx-auto">No hidden charges. Clear, straightforward pricing based on your parcel type, weight, and delivery distance.</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
             {pricingPlans.map((plan, idx) => (
-              <div key={idx} className="p-8 rounded-2xl border border-gray-200 hover:shadow-lg transition-shadow" style={{ backgroundColor: idx === 1 ? 'var(--color-primary)' : '#f8f9fa', color: idx === 1 ? 'var(--color-secondary)' : 'inherit' }}>
+              <div key={idx} className="p-6 sm:p-8 rounded-2xl border border-gray-200 hover:shadow-lg transition-shadow" style={{ backgroundColor: idx === 1 ? 'var(--color-primary)' : '#f8f9fa', color: idx === 1 ? 'var(--color-secondary)' : 'inherit' }}>
                 <h3 className="text-xl font-bold mb-4" style={{ color: idx === 1 ? 'var(--color-secondary)' : 'var(--color-secondary)' }}>{plan.type}</h3>
                 <div className="space-y-4 mb-6">
                   <div>
@@ -330,8 +330,8 @@ Excellence: We never settle for less than the best`
         </div>
 
         {/* FAQ Section */}
-        <div className="py-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">Frequently Asked Questions</h2>
+        <div className="py-10 sm:py-16">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-8 sm:mb-12 text-center">Frequently Asked Questions</h2>
           <div className="max-w-3xl mx-auto space-y-4">
             {faqItems.map((item) => (
               <div key={item.id} className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-shadow">
@@ -357,21 +357,21 @@ Excellence: We never settle for less than the best`
         </div>
 
         {/* CTA Section */}
-        <div className="py-16">
-          <div className="rounded-3xl p-12 text-center text-white" style={{ backgroundColor: 'var(--color-secondary)' }}>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Experience ZapShift?</h2>
-            <p className="text-lg mb-8 max-w-2xl mx-auto" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
+        <div className="py-10 sm:py-16">
+          <div className="rounded-3xl p-6 sm:p-8 lg:p-12 text-center text-white" style={{ backgroundColor: 'var(--color-secondary)' }}>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Ready to Experience ZapShift?</h2>
+            <p className="text-base sm:text-lg mb-6 sm:mb-8 max-w-2xl mx-auto" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
               Join thousands of satisfied customers who trust ZapShift for fast, reliable, and transparent parcel delivery across Bangladesh.
             </p>
-            <div className="flex flex-wrap gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                className="px-8 py-3 text-white font-bold rounded-lg hover:opacity-90 transition-opacity"
+                className="px-6 sm:px-8 py-3 text-white font-bold rounded-lg hover:opacity-90 transition-opacity"
                 style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-secondary)' }}
               >
                 Send a Parcel Now
               </button>
               <button
-                className="px-8 py-3 border-2 text-white font-bold rounded-lg transition-colors hover:text-white"
+                className="px-6 sm:px-8 py-3 border-2 text-white font-bold rounded-lg transition-colors hover:text-white"
                 style={{ borderColor: 'var(--color-primary)', color: 'white' }}
                 onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(202, 235, 102, 0.1)'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}

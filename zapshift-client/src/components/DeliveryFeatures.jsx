@@ -30,7 +30,7 @@ const features = [
 
 const DeliveryFeatures = () => {
   return (
-    <motion.section className="bg-gray-50 py-12 px-4 md:px-8 lg:px-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.5 }}>
+    <motion.section className="bg-gray-50 py-10 sm:py-12 px-4 md:px-8 lg:px-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.5 }}>
       <div className="max-w-6xl mx-auto">
         
         <div className="border-t-2 border-dashed border-gray-300 mb-10"></div>
@@ -40,7 +40,7 @@ const DeliveryFeatures = () => {
             key={index}
             className={`
               my-4 relative flex flex-col md:flex-row items-center md:items-start 
-              bg-white p-6 md:p-0 rounded-xl shadow-md transition-shadow duration-300
+              bg-white p-4 sm:p-6 md:p-0 rounded-xl shadow-md transition-shadow duration-300
               
               ${index > 0 ? 'mt-8' : ''} 
             `}
@@ -59,19 +59,19 @@ const DeliveryFeatures = () => {
                 <img
                   src={feature.image}
                   alt={feature.title}
-                  className="h-28 w-auto object-contain"
+                  className="h-20 sm:h-24 lg:h-28 w-auto object-contain"
                 />
               )}
               {feature.IconComponent && (
-                <feature.IconComponent className="text-8xl text-secondary opacity-75" />
+                <feature.IconComponent className="text-6xl sm:text-7xl lg:text-8xl text-secondary opacity-75" />
               )}
             </div>
 
-            <div className="md:pl-8 flex-grow w-full md:w-3/4 text-center md:text-left p-6 md:p-10 pt-0 md:pt-10">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+            <div className="md:pl-8 flex-grow w-full md:w-3/4 text-center md:text-left p-4 sm:p-6 md:p-10 pt-0 md:pt-10">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
                 {feature.title}
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                 {feature.description}
               </p>
             </div>

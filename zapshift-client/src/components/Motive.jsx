@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 
 const Motive = () => {
     return (
-        <motion.section className="p-4 md:p-8" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.15 }} transition={{ duration: 0.5 }}>
+        <motion.section className="p-4 sm:p-6 md:p-8" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.15 }} transition={{ duration: 0.5 }}>
             <motion.div 
                 className="relative max-w-7xl mx-auto rounded-xl overflow-hidden shadow-2xl bg-secondary"
                 whileHover={{ y: -4 }}
@@ -19,13 +19,13 @@ const Motive = () => {
                     className="absolute top-0 left-0 w-full h-auto object-cover opacity-50"
                 />
 
-                <div className="relative p-8 md:p-16 flex flex-col md:flex-row items-center justify-between z-10">
+                <div className="relative p-6 sm:p-8 md:p-16 flex flex-col md:flex-row items-center justify-between z-10">
                     
                     <div className="md:w-3/5 text-white text-center md:text-left mb-8 md:mb-0">
-                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 leading-tight">
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 leading-tight">
                             Merchant and Customer Satisfaction <span className="block">is Our First Priority</span>
                         </h2>
-                        <p className="text-base text-tertiary mb-8 max-w-lg mx-auto md:mx-0">
+                        <p className="text-sm sm:text-base text-tertiary mb-8 max-w-lg mx-auto md:mx-0">
                             We offer the lowest delivery charge with the highest value along with 100% safety of your product. Pathao courier delivers your parcels in every corner of Bangladesh right on time.
                         </p>
 
@@ -33,7 +33,7 @@ const Motive = () => {
                             <motion.div whileHover={{ y: -2, scale: 1.01 }} whileTap={{ scale: 0.98 }}>
                             <Link 
                                 to="/register" 
-                                className="active:scale-95 inline-block px-8 py-3 rounded-full text-lg font-semibold transition-colors duration-300 bg-primary hover:bg-gray-400"
+                                className="active:scale-95 inline-block px-6 sm:px-8 py-3 rounded-full text-sm sm:text-lg font-semibold transition-colors duration-300 bg-primary hover:bg-gray-400"
                                 style={{ color: '#133330' }}
                             >
                                 Become a Merchant
@@ -43,7 +43,7 @@ const Motive = () => {
                             <motion.div whileHover={{ y: -2, scale: 1.01 }} whileTap={{ scale: 0.98 }}>
                             <Link 
                                 to="/rider" 
-                                className="active:scale-95  inline-block px-8 py-3 rounded-full text-lg font-semibold border-2 border-primary text-primary transition-colors duration-300 hover:bg-white hover:text-black"
+                                className="active:scale-95 inline-block px-6 sm:px-8 py-3 rounded-full text-sm sm:text-lg font-semibold border-2 border-primary text-primary transition-colors duration-300 hover:bg-white hover:text-black"
                             >
                                 Earn with ZapShift Courier
                             </Link>
@@ -51,7 +51,7 @@ const Motive = () => {
                         </div>
                     </div>
 
-                    <div className="md:w-2/5 flex justify-center md:justify-end min-h-[250px] relative">
+                    <div className="md:w-2/5 flex justify-center md:justify-end min-h-[200px] sm:min-h-[250px] relative">
                         <img 
                             src={rightimg} 
                             alt="Parcels and location pin illustration" 

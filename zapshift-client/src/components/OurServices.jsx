@@ -49,30 +49,30 @@ const serviceCards = [
 
 const OurServices = () => {
   return (
-    <section className="bg-secondary py-16 px-4 sm:px-6 lg:px-8 rounded-4xl">
+    <section className="bg-secondary py-12 sm:py-16 px-4 sm:px-6 lg:px-8 rounded-3xl sm:rounded-4xl">
       <div className="max-w-7xl mx-auto text-center mb-12">
-        <h2 className="text-4xl font-extrabold text-white mb-4">Our Services</h2>
-        <p className="textarea-md text-gray-500 max-w-2xl mx-auto">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white mb-4">Our Services</h2>
+        <p className="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto">
           Enjoy fast, reliable parcel delivery with real-time tracking and zero hassle. From personal packages to business shipments — we deliver on time, every time.
         </p>
       </div>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
         {serviceCards.map((card, index) => {
           const ServiceIcon = card.icon;
           return (
             <div
               key={index}
-              className="relative p-8 rounded-xl shadow-lg flex flex-col items-center text-left bg-white hover:scale-105 hover:shadow-xl transition-all duration-300 ease-in-out hover:bg-primary h-70"
+              className="relative p-6 sm:p-8 rounded-xl shadow-lg flex flex-col items-center text-left bg-white hover:shadow-xl transition-all duration-300 ease-in-out hover:bg-primary min-h-[18rem]"
             >
-              <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[color:color-mix(in_srgb,var(--color-primary)_22%,white)] text-[var(--color-primary)]">
-                <ServiceIcon className="text-3xl" />
+              <div className="mb-4 sm:mb-6 inline-flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-[color:color-mix(in_srgb,var(--color-primary)_22%,white)] text-[var(--color-primary)]">
+                <ServiceIcon className="text-2xl sm:text-3xl" />
               </div>
 
-              <h3 className="textarea-xl font-bold text-secondary mb-3">
+              <h3 className="text-lg sm:text-xl font-bold text-secondary mb-3">
                 {card.title}
               </h3>
-              <p className="text-tertiary textarea-md">
+              <p className="text-sm sm:text-base text-tertiary">
                 {card.description}
               </p>
             </div>

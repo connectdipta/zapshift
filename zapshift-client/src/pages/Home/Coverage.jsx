@@ -54,20 +54,20 @@ const Coverage = () => {
   };
 
   return (
-    <div className=" mx-auto bg-white rounded-3xl p-10 pt-2 shadow-2xl mt-6 mb-6">
+    <div className="mx-auto bg-white rounded-3xl p-4 sm:p-6 lg:p-10 pt-2 shadow-2xl mt-4 sm:mt-6 mb-4 sm:mb-6">
       <ReactNotifications />
       <div className="">
         {/* Header */}
-        <div className="py-12 px-6">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Coverage Area</h1>
-          <p className="text-gray-600">
+        <div className="py-8 sm:py-12 px-4 sm:px-6">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Coverage Area</h1>
+          <p className="text-sm sm:text-base text-gray-600">
             We are available in <span className="font-extrabold">64 districts</span> across Bangladesh with fast, reliable delivery services.
           </p>
         </div>
 
         {/* Search Section */}
-        <div className="py-6 px-6 border-b border-gray-200">
-          <form onSubmit={handleSearch} className="flex items-center gap-3 w-full max-w-xl">
+        <div className="py-6 px-4 sm:px-6 border-b border-gray-200">
+          <form onSubmit={handleSearch} className="flex flex-col sm:flex-row items-stretch gap-3 w-full max-w-xl">
             <div className="flex items-center bg-white border border-gray-300 rounded-lg px-4 py-3 w-full">
               <svg className="h-5 w-5 text-gray-400 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.3" fill="none" stroke="currentColor">
@@ -79,7 +79,7 @@ const Coverage = () => {
             </div>
             <button 
               type="submit" 
-              className="px-6 py-3 rounded-lg font-semibold transition hover:brightness-90 text-gray-900"
+              className="px-6 py-3 rounded-lg font-semibold transition hover:brightness-90 text-gray-900 w-full sm:w-auto"
               style={{ backgroundColor: 'var(--color-primary)' }}
             >
               Search
@@ -88,12 +88,12 @@ const Coverage = () => {
         </div>
 
         {/* Map Section */}
-        <div className="py-12 px-6">
-          <h3 className="mb-6 text-xl font-semibold text-gray-900">
+        <div className="py-8 sm:py-12 px-4 sm:px-6">
+          <h3 className="mb-6 text-lg sm:text-xl font-semibold text-gray-900">
             We deliver almost all over Bangladesh
           </h3>
 
-          <div className="w-full h-[500px] rounded-lg overflow-hidden border border-gray-300 shadow">
+          <div className="w-full h-[320px] sm:h-[420px] lg:h-[500px] rounded-lg overflow-hidden border border-gray-300 shadow">
             <MapContainer center={position} zoom={7} scrollWheelZoom={true} ref={mapRef} className="h-full w-full">
               <TileLayer attribution='&copy; OpenStreetMap contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
               {serviceCenters.map((center, index) => (

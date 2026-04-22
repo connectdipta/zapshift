@@ -6,6 +6,14 @@ Frontend single-page application for ZapShift. Built with React and Vite, this a
 
 - https://zapshift-partner.vercel.app
 
+## Latest Update (April 2026)
+
+- Mobile responsiveness was improved across public pages and core landing components.
+- Updated pages include About, Coverage, Send Parcel, Rider, Pricing, Services, Login, Register, and Error page.
+- Updated components include Navbar, Footer, Banner, OurServices, DeliveryFeatures, FAQSection, and Motive.
+- Latest production deployment is live on Vercel:
+  - https://zapshift-partner.vercel.app
+
 ## Stack
 
 - React 18
@@ -109,6 +117,12 @@ npm run preview
 - Production env vars are configured in Vercel project settings.
 - Frontend points to backend API URL:
   - https://zapshift-server-ebon.vercel.app
+
+Recommended deploy command:
+
+```bash
+vercel deploy --prod --yes
+```
 
 ## Troubleshooting
 

@@ -63,14 +63,14 @@ const FAQSection = () => {
   const isShowMoreVisible = visibleCount < faqData.length;
 
   return (
-    <motion.section className="bg-gray-50 py-16 px-4 md:px-8 rounded-4xl mt-4" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.5 }}>
+    <motion.section className="bg-gray-50 py-12 sm:py-16 px-4 md:px-8 rounded-3xl sm:rounded-4xl mt-4" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.5 }}>
       <div className="max-w-4xl mx-auto">
         
         <motion.div className="text-center mb-10" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.45 }}>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-secondary tracking-wide">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-secondary tracking-wide">
             Frequently Asked Question (FAQ)
           </h2>
-          <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
+          <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto">
             Enhance posture, mobility, and well-being effortlessly with Posture Pro. Achieve proper alignment, reduce pain, and strengthen your body with ease!
           </p>
         </motion.div>
@@ -94,7 +94,7 @@ const FAQSection = () => {
               >
                 <button
                   className={`
-                    w-full flex justify-between items-center p-5 text-left font-semibold 
+                    w-full flex justify-between items-center gap-4 p-4 sm:p-5 text-left font-semibold 
                     ${isOpen ? 'text-teal-700 bg-teal-50' : 'text-gray-700 hover:bg-gray-50'}
                   `}
                   onClick={() => toggleFAQ(index)}
@@ -116,7 +116,7 @@ const FAQSection = () => {
                       transition={{ duration: 0.28, ease: 'easeOut' }}
                       className="overflow-hidden"
                     >
-                      <p className="text-tertiary text-sm border-t border-gray-200 pt-5 p-5 pt-0">
+                      <p className="text-tertiary text-sm border-t border-gray-200 pt-4 sm:pt-5 p-4 sm:p-5 pt-0">
                         {item.answer}
                       </p>
                     </motion.div>
@@ -127,10 +127,10 @@ const FAQSection = () => {
           })}
         </div>
         {isShowMoreVisible && (
-          <motion.div className="flex justify-center mt-12" initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.45 }}>
+          <motion.div className="flex justify-center mt-10 sm:mt-12" initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.45 }}>
             <motion.button
               onClick={handleShowMore}
-              className="flex items-center gap-2 px-8 py-3 rounded-full text-lg font-semibold text-gray-800 transition-shadow duration-300 shadow-md hover:shadow-lg"
+              className="flex items-center gap-2 px-6 sm:px-8 py-3 rounded-full text-sm sm:text-lg font-semibold text-gray-800 transition-shadow duration-300 shadow-md hover:shadow-lg"
               style={{ backgroundColor: '#B8EA5C' }}
               whileHover={{ y: -2, scale: 1.01 }}
               whileTap={{ scale: 0.98 }}

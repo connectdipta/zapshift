@@ -7,6 +7,12 @@ Role-based parcel delivery platform with real-time tracking, workflow-driven ope
 - Frontend: https://zapshift-partner.vercel.app
 - Backend API: https://zapshift-server-ebon.vercel.app
 
+## Latest Update (April 2026)
+
+- Public pages were updated with mobile-first responsive improvements.
+- Frontend was redeployed to Vercel after responsiveness fixes.
+- Backend was also redeployed to Vercel and verified as healthy (HTTP 200).
+
 ## Repository Structure
 
 - [zapshift-client](zapshift-client) React + Vite frontend app
@@ -76,6 +82,11 @@ See setup instructions in:
 - Frontend is deployed on Vercel.
 - Backend is deployed on Vercel Serverless functions.
 - Ensure frontend environment points to the deployed backend URL.
+
+Current production endpoints:
+
+- Frontend: https://zapshift-partner.vercel.app
+- Backend: https://zapshift-server-ebon.vercel.app
 
 ## Recent Production Notes
 

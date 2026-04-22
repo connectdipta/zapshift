@@ -49,10 +49,10 @@ const Register = () => {
   const photoFile = watch("photo");
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-md mx-auto px-4 sm:px-0">
       {/* Header */}
-      <h2 className="text-4xl font-extrabold mb-2 text-black">Create an Account</h2>
-      <p className="text-gray-800 mb-8">Register with ZapShift</p>
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-2 text-black">Create an Account</h2>
+      <p className="text-sm sm:text-base text-gray-800 mb-6 sm:mb-8">Register with ZapShift</p>
 
       {/* Form */}
       <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
@@ -141,7 +141,7 @@ const Register = () => {
       </form>
 
       {/* Already have account */}
-      <p className="mt-4 text-gray-500 text-sm">
+      <p className="mt-4 text-gray-500 text-sm leading-6">
         Already have an account?
         <Link state = {location.state} to="/login" className="text-[#8FB02D] font-bold ml-1 hover:underline">
           Login
