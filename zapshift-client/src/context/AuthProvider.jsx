@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { AuthContext } from './AuthContext';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
 import { auth } from '../firebase/firebase.init';
+import apiBaseUrl from '../config/apiBaseUrl';
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -88,7 +89,7 @@ const AuthProvider = ({children}) => {
                         const syncController = new AbortController()
                         const syncTimeout = setTimeout(() => syncController.abort(), 8000)
 
-                        await fetch(`${import.meta.env.VITE_API_URL}/users/sync`, {
+                        await fetch(`${apiBaseUrl}/users/sync`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -106,7 +107,7 @@ const AuthProvider = ({children}) => {
                         const tokenController = new AbortController()
                         const tokenTimeout = setTimeout(() => tokenController.abort(), 8000)
 
-                        const tokenRes = await fetch(`${import.meta.env.VITE_API_URL}/jwt`, {
+                        const tokenRes = await fetch(`${apiBaseUrl}/jwt`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'

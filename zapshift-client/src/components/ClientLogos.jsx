@@ -24,7 +24,7 @@ const ClientLogos = () => (
       </h2>
     </div>
 
-    <Marquee pauseOnHover gradient={false} speed={50}>
+    <Marquee pauseOnHover gradient={false} speed={50} autoFill={true}>
       {logos.map((logo, index) => (
         <img
           key={index}

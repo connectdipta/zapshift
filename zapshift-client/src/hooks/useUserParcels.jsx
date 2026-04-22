@@ -26,7 +26,10 @@ const useUserParcels = () => {
       const res = await axiosSecure.get(`/parcels?email=${encodeURIComponent(user.email)}`);
       return res.data || [];
     },
-    staleTime: 60 * 1000,
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
+    refetchInterval: 30000,
   });
 
   const parcels = useMemo(() => {

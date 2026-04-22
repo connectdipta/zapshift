@@ -109,7 +109,7 @@ Additional states:
 Create .env in zapshift-server:
 
 ```env
-PORT=3000
+PORT=5000
 MONGODB_URI=your_mongodb_connection_string
 JWT_ACCESS_SECRET=your_strong_secret
 ```

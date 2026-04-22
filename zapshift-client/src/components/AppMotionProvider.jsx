@@ -1,21 +1,12 @@
 import { useEffect } from 'react'
-import AOS from 'aos'
-import 'aos/dist/aos.css'
 
 const AppMotionProvider = ({ children }) => {
   useEffect(() => {
-    AOS.init({
-      duration: 700,
-      once: true,
-      offset: 30,
-      easing: 'ease-out-cubic',
-    })
-
-    const handleLoad = () => AOS.refreshHard()
-    window.addEventListener('load', handleLoad)
+    const root = document.documentElement
+    root.classList.add('motion-ready')
 
     return () => {
-      window.removeEventListener('load', handleLoad)
+      root.classList.remove('motion-ready')
     }
   }, [])
 

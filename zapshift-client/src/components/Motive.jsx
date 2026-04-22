@@ -3,12 +3,15 @@ import { Link } from 'react-router';
 // Assuming these paths are correct for your project structure
 import rightimg from '../assets/location-merchant.png'; 
 import toppng from '../assets/be-a-merchant-bg.png';
+import { motion } from 'framer-motion';
 
 const Motive = () => {
     return (
-        <section className="p-4 md:p-8">
-            <div 
+        <motion.section className="p-4 md:p-8" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.15 }} transition={{ duration: 0.5 }}>
+            <motion.div 
                 className="relative max-w-7xl mx-auto rounded-xl overflow-hidden shadow-2xl bg-secondary"
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.3 }}
             >
                 <img 
                     src={toppng} 
@@ -27,6 +30,7 @@ const Motive = () => {
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                            <motion.div whileHover={{ y: -2, scale: 1.01 }} whileTap={{ scale: 0.98 }}>
                             <Link 
                                 to="/register" 
                                 className="active:scale-95 inline-block px-8 py-3 rounded-full text-lg font-semibold transition-colors duration-300 bg-primary hover:bg-gray-400"
@@ -34,13 +38,16 @@ const Motive = () => {
                             >
                                 Become a Merchant
                             </Link>
+                            </motion.div>
                             
+                            <motion.div whileHover={{ y: -2, scale: 1.01 }} whileTap={{ scale: 0.98 }}>
                             <Link 
                                 to="/rider" 
                                 className="active:scale-95  inline-block px-8 py-3 rounded-full text-lg font-semibold border-2 border-primary text-primary transition-colors duration-300 hover:bg-white hover:text-black"
                             >
                                 Earn with ZapShift Courier
                             </Link>
+                            </motion.div>
                         </div>
                     </div>
 
@@ -52,8 +59,8 @@ const Motive = () => {
                         />
                     </div>
                 </div>
-            </div>
-        </section>
+            </motion.div>
+        </motion.section>
     );
 };
 

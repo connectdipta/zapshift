@@ -2,6 +2,7 @@ import React from "react";
 import image1 from '../assets/live-tracking.png'
 import image2 from '../assets/safe-delivery.png'
 import { FiHeadphones } from 'react-icons/fi'; 
+import { motion } from 'framer-motion';
 
 const features = [
   {
@@ -29,13 +30,13 @@ const features = [
 
 const DeliveryFeatures = () => {
   return (
-    <section className="bg-gray-50 py-12 px-4 md:px-8 lg:px-16">
+    <motion.section className="bg-gray-50 py-12 px-4 md:px-8 lg:px-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.5 }}>
       <div className="max-w-6xl mx-auto">
         
         <div className="border-t-2 border-dashed border-gray-300 mb-10"></div>
 
         {features.map((feature, index) => (
-          <div
+          <motion.div
             key={index}
             className={`
               my-4 relative flex flex-col md:flex-row items-center md:items-start 
@@ -44,6 +45,10 @@ const DeliveryFeatures = () => {
               ${index > 0 ? 'mt-8' : ''} 
             `}
             style={{ borderRadius: '15px', overflow: 'hidden' }}
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.45, delay: index * 0.05 }}
           >
             
             <div 
@@ -74,13 +79,13 @@ const DeliveryFeatures = () => {
             {index < features.length - 1 && (
                 <div className="absolute bottom-[-1.5rem] left-0 right-0 h-px mx-auto max-w-[90%] border-t border-gray-200"></div>
             )}
-          </div>
+          </motion.div>
         ))}
 
         <div className="border-b-2 border-dashed border-gray-300 mt-10"></div>
 
       </div>
-    </section>
+    </motion.section>
   );
 };
 

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import Logo from "./Logo";
 import { Link, NavLink, useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
+import { AnimatePresence, motion } from 'framer-motion';
+import { fadeUp, springTransition } from './motionPresets';
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -20,6 +22,10 @@ const Navbar = () => {
         <NavLink
           end
           to="/"
+          onClick={() => {
+            setOpen(false);
+            setShowProfileMenu(false);
+          }}
           className={({ isActive }) => (isActive ? activeClass : inactiveClass)}
         >
           Home
@@ -28,6 +34,10 @@ const Navbar = () => {
       <li>
         <NavLink
           to="/coverage"
+          onClick={() => {
+            setOpen(false);
+            setShowProfileMenu(false);
+          }}
           className={({ isActive }) => (isActive ? activeClass : inactiveClass)}
         >
           Coverage
@@ -36,6 +46,10 @@ const Navbar = () => {
       <li>
         <NavLink
           to="/about-us"
+          onClick={() => {
+            setOpen(false);
+            setShowProfileMenu(false);
+          }}
           className={({ isActive }) => (isActive ? activeClass : inactiveClass)}
         >
           About Us
@@ -44,6 +58,10 @@ const Navbar = () => {
       <li>
         <NavLink
           to="/send-parcel"
+          onClick={() => {
+            setOpen(false);
+            setShowProfileMenu(false);
+          }}
           className={({ isActive }) => (isActive ? activeClass : inactiveClass)}
         >
           Send Parcel
@@ -52,6 +70,10 @@ const Navbar = () => {
       <li>
         <NavLink
           to="/pricing"
+          onClick={() => {
+            setOpen(false);
+            setShowProfileMenu(false);
+          }}
           className={({ isActive }) => (isActive ? activeClass : inactiveClass)}
         >
           Pricing
@@ -60,6 +82,10 @@ const Navbar = () => {
       <li>
         <NavLink
           to="/rider"
+          onClick={() => {
+            setOpen(false);
+            setShowProfileMenu(false);
+          }}
           className={({ isActive }) => (isActive ? activeClass : inactiveClass)}
         >
           Be a Rider
@@ -103,12 +129,23 @@ const Navbar = () => {
       .toUpperCase();
   };
 
+  const handleNavClick = () => {
+    setOpen(false);
+    setShowProfileMenu(false);
+  };
+
   return (
-    <div className="navbar bg-base-100 shadow-sm mb-5 relative rounded-2xl mx-2 mt-2 px-4 sticky top-0 z-50">
-      <div className="navbar-start">
-        <button
+    <motion.div
+      className="navbar bg-base-100 shadow-sm mb-5 relative rounded-2xl mx-2 mt-2 px-4 sticky top-0 z-50"
+      initial={{ opacity: 0, y: -16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: 'easeOut' }}
+    >
+      <motion.div className="navbar-start" initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.35 }}>
+        <motion.button
           onClick={() => setOpen(!open)}
           className="btn btn-ghost lg:hidden"
+          whileTap={{ scale: 0.94 }}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -133,29 +170,39 @@ const Navbar = () => {
               />
             )}
           </svg>
-        </button>
+        </motion.button>
 
-        {open && (
-          <ul className="menu bg-base-100 rounded-box absolute top-16 left-3 shadow w-52 p-2 z-50 lg:hidden">
-            {links}
-          </ul>
-        )}
+        <AnimatePresence>
+          {open && (
+            <motion.ul
+              className="menu bg-base-100 rounded-box absolute top-16 left-3 shadow w-52 p-2 z-50 lg:hidden"
+              initial={{ opacity: 0, y: -8, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.98 }}
+              transition={springTransition}
+            >
+              {links}
+            </motion.ul>
+          )}
+        </AnimatePresence>
 
         <Link to="/">
           <Logo />
         </Link>
-      </div>
+      </motion.div>
 
-      <div className="navbar-center hidden lg:flex">
+      <motion.div className="navbar-center hidden lg:flex" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.05 }}>
         <ul className="menu menu-horizontal px-2">{links}</ul>
-      </div>
+      </motion.div>
 
-      <div className="navbar-end gap-3 flex items-center">
+      <motion.div className="navbar-end gap-3 flex items-center" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
         {user ? (
           <div className="relative" ref={profileMenuRef}>
-            <button
+            <motion.button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
               className="w-10 h-10 rounded-full bg-[var(--color-primary)] text-black font-bold flex items-center justify-center hover:shadow-lg transition cursor-pointer"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
             >
               {user?.photoURL ? (
                 <img
@@ -166,10 +213,11 @@ const Navbar = () => {
               ) : (
                 getInitials(user?.displayName)
               )}
-            </button>
+            </motion.button>
 
-            {showProfileMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+            <AnimatePresence>
+              {showProfileMenu && (
+              <motion.div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50" initial={{ opacity: 0, y: -8, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -8, scale: 0.98 }} transition={springTransition}>
                 <div className="px-4 py-3 border-b border-gray-100">
                   <p className="font-semibold text-gray-900 text-sm">
                     {user?.displayName || "User"}
@@ -216,8 +264,9 @@ const Navbar = () => {
                   </svg>
                   Logout
                 </button>
-              </div>
+              </motion.div>
             )}
+            </AnimatePresence>
           </div>
         ) : (
           <>
@@ -229,8 +278,8 @@ const Navbar = () => {
             </Link>
           </>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

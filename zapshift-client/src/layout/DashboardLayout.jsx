@@ -25,6 +25,7 @@ import useAuth from "../hooks/useAuth";
 import useCurrentUserRole from "../hooks/useCurrentUserRole";
 import axiosSecure from "../hooks/useAxiosSecure";
 import RouteTransition from "../components/RouteTransition";
+import { AnimatePresence, motion } from "framer-motion";
 
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -222,7 +223,7 @@ const DashboardLayout = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen bg-[#efefef]">
+    <motion.div className="min-h-screen bg-[#efefef]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.35 }}>
       <div className="mx-auto flex w-full max-w-[1400px]">
         {sidebarOpen && (
           <button
@@ -232,8 +233,8 @@ const DashboardLayout = () => {
           />
         )}
 
-        <aside className={`fixed inset-y-0 left-0 z-30 min-h-screen border-r border-[#e8e8e8] bg-[#f4f4f4] px-4 py-5 transition-all duration-200 lg:static lg:translate-x-0 ${desktopSidebarCollapsed ? "lg:w-[82px]" : "lg:w-[230px]"} ${sidebarOpen ? "translate-x-0 w-[230px]" : "-translate-x-full w-[230px]"}`}>
-          <div className="mb-6 flex items-center justify-between">
+        <motion.aside className={`fixed inset-y-0 left-0 z-30 min-h-screen border-r border-[#e8e8e8] bg-[#f4f4f4] px-4 py-5 transition-all duration-200 lg:static lg:translate-x-0 ${desktopSidebarCollapsed ? "lg:w-[82px]" : "lg:w-[230px]"} ${sidebarOpen ? "translate-x-0 w-[230px]" : "-translate-x-full w-[230px]"}`} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.35 }}>
+          <motion.div className="mb-6 flex items-center justify-between" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
             <Link to="/">
               <Logo compact={desktopSidebarCollapsed && !sidebarOpen} />
             </Link>
@@ -243,13 +244,14 @@ const DashboardLayout = () => {
             >
               <MdMenu className="text-lg" />
             </button>
-          </div>
+          </motion.div>
 
           <p className="mb-2 px-2 text-[10px] font-semibold tracking-wide text-gray-400">MENU</p>
           <div className="space-y-1">
             {menuItemsTop.map((item) => {
               const Icon = item.icon;
               return (
+                <motion.div key={item.name} whileHover={{ x: 4 }} whileTap={{ scale: 0.98 }}>
                 <Link
                   key={item.name}
                   to={item.path}
@@ -262,6 +264,7 @@ const DashboardLayout = () => {
                   <Icon className="text-sm" />
                   {!desktopSidebarCollapsed && <span>{item.name}</span>}
                 </Link>
+                </motion.div>
               );
             })}
           </div>
@@ -271,6 +274,7 @@ const DashboardLayout = () => {
             {menuItemsGeneral.map((item) => {
               const Icon = item.icon;
               return (
+                <motion.div key={item.name} whileHover={{ x: 4 }} whileTap={{ scale: 0.98 }}>
                 <Link
                   key={item.name}
                   to={item.path}
@@ -283,6 +287,7 @@ const DashboardLayout = () => {
                   <Icon className="text-sm" />
                   {!desktopSidebarCollapsed && <span>{item.name}</span>}
                 </Link>
+                </motion.div>
               );
             })}
             <button
@@ -293,10 +298,10 @@ const DashboardLayout = () => {
               {!desktopSidebarCollapsed && <span>Logout</span>}
             </button>
           </div>
-        </aside>
+        </motion.aside>
 
-        <div className="flex-1">
-          <div className="sticky top-0 z-10 border-b border-[#e4e4e4] bg-[#f4f4f4] px-4 py-3 sm:px-6">
+        <div className="flex flex-1 min-h-screen flex-col">
+          <motion.div className="sticky top-0 z-10 border-b border-[#e4e4e4] bg-[#f4f4f4] px-4 py-3 sm:px-6" initial={{ y: -12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.35 }}>
             <div className="flex items-center justify-between">
               <button
                 onClick={() => {
@@ -417,16 +422,28 @@ const DashboardLayout = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="p-4 sm:p-6">
+          <motion.div className="flex-1 p-4 sm:p-6" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05 }}>
             <RouteTransition>
               <Outlet />
             </RouteTransition>
-          </div>
+          </motion.div>
+
+          {/* Footer */}
+          <motion.div 
+            className="mt-auto border-t border-gray-200 bg-white p-4 sm:p-6 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <p className="text-xs sm:text-sm text-gray-500">
+              Made with ❤️ by <span className="font-semibold text-gray-700">Dipto Acharjee</span>
+            </p>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

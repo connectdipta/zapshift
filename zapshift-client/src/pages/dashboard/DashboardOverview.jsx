@@ -13,8 +13,8 @@ import {
   MdAdd,
 } from "react-icons/md";
 import {
-  AreaChart,
-  Area,
+  LineChart,
+  Line,
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
@@ -32,6 +32,10 @@ const DashboardOverview = () => {
       const res = await axiosSecure.get("/parcels/admin/stats");
       return res.data;
     },
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
+    refetchInterval: 15000,
   });
 
   const { data: parcels = [], isLoading: parcelsLoading, isError } = useQuery({
@@ -40,6 +44,10 @@ const DashboardOverview = () => {
       const res = await axiosSecure.get("/parcels");
       return res.data || [];
     },
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
+    refetchInterval: 15000,
   });
 
   const rowsPerPage = 6;
@@ -95,6 +103,20 @@ const DashboardOverview = () => {
   const lateInvoices = parcels.filter((p) => String(p.paymentStatus || "unpaid").toLowerCase() !== "paid").slice(0, 6);
 
   const alerts = statsData?.alerts || { delayed: 0, failed: 0, damaged: 0 };
+  const chartData = React.useMemo(() => {
+    const source = Array.isArray(statsData?.chart) ? statsData.chart : [];
+    const fallbackDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    if (!source.length) {
+      return fallbackDays.map((day) => ({ day, parcels: 0, income: 0 }));
+    }
+
+    return source.map((item) => ({
+      day: item?.day || "",
+      parcels: Number(item?.parcels) || 0,
+      income: Number(item?.income) || 0,
+    }));
+  }, [statsData?.chart]);
 
   return (
     <div className="space-y-4">
@@ -144,19 +166,13 @@ const DashboardOverview = () => {
 
         <div className="h-[260px] rounded-lg border border-[#e2e2e2] bg-white p-3">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={statsData?.chart || []} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="incomeFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#caeb66" stopOpacity={0.7} />
-                  <stop offset="100%" stopColor="#caeb66" stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
+            <LineChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-              <XAxis dataKey="day" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} />
+              <XAxis dataKey="day" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} width={40} />
               <Tooltip formatter={(value) => [`Tk ${Number(value).toFixed(2)}`, "Income"]} />
-              <Area type="monotone" dataKey="income" stroke="#b8d94a" fill="url(#incomeFill)" strokeWidth={3} />
-            </AreaChart>
+              <Line type="monotone" dataKey="income" stroke="#b8d94a" strokeWidth={3} dot={{ r: 4, fill: "#caeb66" }} activeDot={{ r: 6 }} />
+            </LineChart>
           </ResponsiveContainer>
         </div>
       </section>

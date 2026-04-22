@@ -36,8 +36,10 @@ const LottieAnimation = ({
       ref={containerRef} 
       className={className}
       style={{ 
-        width: className ? 'auto' : `${width}px`, 
-        height: className ? 'auto' : `${height}px`,
+        width: className ? '100%' : `${width}px`, 
+        height: className ? '100%' : `${height}px`,
+        minWidth: 0,
+        minHeight: 0,
         margin: '0 auto'
       }}
     />

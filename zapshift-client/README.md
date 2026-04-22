@@ -54,7 +54,7 @@ Frontend single-page application for ZapShift. Built with React and Vite, this a
 Create .env in zapshift-client:
 
 ```env
-VITE_API_URL=http://localhost:3000
+VITE_API_URL=https://zapshift-server-ebon.vercel.app
 VITE_apiKey=your_firebase_api_key
 VITE_authDomain=your_firebase_auth_domain
 VITE_projectId=your_firebase_project_id
@@ -115,7 +115,7 @@ npm run preview
 ### Google sign-in popup opens but app hangs on loading
 
 - Confirm backend /jwt endpoint is reachable.
-- Confirm VITE_API_URL is set to deployed backend.
+- Confirm VITE_API_URL is set to the backend you are actually using, locally or in deployment.
 - Confirm Firebase authorized domain includes your Vercel domain.
 
 ### Map markers not visible in Coverage page
